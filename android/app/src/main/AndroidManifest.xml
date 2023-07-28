@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:label="u_traffic_driver"
+=======
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.driverslogin">
+   <application
+        android:label="driverslogin"
+>>>>>>> 26e2cea (register/login with validators)
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

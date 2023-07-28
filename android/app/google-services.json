@@ -7,6 +7,45 @@
   "client": [
     {
       "client_info": {
+<<<<<<< HEAD
+=======
+        "mobilesdk_app_id": "1:481798215371:android:7deca3581c0bab7d51ed4e",
+        "android_client_info": {
+          "package_name": "com.example.driverslogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481798215371-8np2tossh15tr4sg6df4cckbo8s30l1j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA7CXiC2SA3a4y8mZNljvzvdD1Aber4GM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481798215371-8np2tossh15tr4sg6df4cckbo8s30l1j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "481798215371-ttiur776lo7hvce4rlvjd3rvf3mfmfo9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.uTrafficDriver"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+>>>>>>> 26e2cea (register/login with validators)
         "mobilesdk_app_id": "1:481798215371:android:b6f4490561967dcb51ed4e",
         "android_client_info": {
           "package_name": "com.example.u_traffic_driver"
@@ -29,6 +68,16 @@
             {
               "client_id": "481798215371-8np2tossh15tr4sg6df4cckbo8s30l1j.apps.googleusercontent.com",
               "client_type": 3
+<<<<<<< HEAD
+=======
+            },
+            {
+              "client_id": "481798215371-ttiur776lo7hvce4rlvjd3rvf3mfmfo9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.uTrafficDriver"
+              }
+>>>>>>> 26e2cea (register/login with validators)
             }
           ]
         }
@@ -58,6 +107,16 @@
             {
               "client_id": "481798215371-8np2tossh15tr4sg6df4cckbo8s30l1j.apps.googleusercontent.com",
               "client_type": 3
+<<<<<<< HEAD
+=======
+            },
+            {
+              "client_id": "481798215371-ttiur776lo7hvce4rlvjd3rvf3mfmfo9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.uTrafficDriver"
+              }
+>>>>>>> 26e2cea (register/login with validators)
             }
           ]
         }
