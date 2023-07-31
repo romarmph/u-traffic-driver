@@ -38,6 +38,7 @@
       </MacroExpansion>
       <Testables>
 <<<<<<< HEAD
+<<<<<<< HEAD
          <TestableReference
             skipped = "NO"
             parallelizable = "YES">
@@ -51,6 +52,8 @@
          </TestableReference>
 =======
 >>>>>>> 26e2cea (register/login with validators)
+=======
+>>>>>>> 624b808 (fixed(july31))
       </Testables>
    </TestAction>
    <LaunchAction

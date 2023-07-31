@@ -8,7 +8,10 @@
     {
       "client_info": {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 624b808 (fixed(july31))
         "mobilesdk_app_id": "1:481798215371:android:7deca3581c0bab7d51ed4e",
         "android_client_info": {
           "package_name": "com.example.driverslogin"
@@ -45,7 +48,10 @@
     },
     {
       "client_info": {
+<<<<<<< HEAD
 >>>>>>> 26e2cea (register/login with validators)
+=======
+>>>>>>> 624b808 (fixed(july31))
         "mobilesdk_app_id": "1:481798215371:android:b6f4490561967dcb51ed4e",
         "android_client_info": {
           "package_name": "com.example.u_traffic_driver"
@@ -69,7 +75,10 @@
               "client_id": "481798215371-8np2tossh15tr4sg6df4cckbo8s30l1j.apps.googleusercontent.com",
               "client_type": 3
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 624b808 (fixed(july31))
             },
             {
               "client_id": "481798215371-ttiur776lo7hvce4rlvjd3rvf3mfmfo9.apps.googleusercontent.com",
@@ -77,7 +86,10 @@
               "ios_info": {
                 "bundle_id": "com.example.uTrafficDriver"
               }
+<<<<<<< HEAD
 >>>>>>> 26e2cea (register/login with validators)
+=======
+>>>>>>> 624b808 (fixed(july31))
             }
           ]
         }
@@ -108,7 +120,10 @@
               "client_id": "481798215371-8np2tossh15tr4sg6df4cckbo8s30l1j.apps.googleusercontent.com",
               "client_type": 3
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 624b808 (fixed(july31))
             },
             {
               "client_id": "481798215371-ttiur776lo7hvce4rlvjd3rvf3mfmfo9.apps.googleusercontent.com",
@@ -116,7 +131,10 @@
               "ios_info": {
                 "bundle_id": "com.example.uTrafficDriver"
               }
+<<<<<<< HEAD
 >>>>>>> 26e2cea (register/login with validators)
+=======
+>>>>>>> 624b808 (fixed(july31))
             }
           ]
         }
