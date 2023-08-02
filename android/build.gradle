@@ -6,15 +6,7 @@ buildscript {
     }
 
     dependencies {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        classpath 'com.android.tools.build:gradle:7.3.0'
-=======
         classpath 'com.android.tools.build:gradle:7.2.0'
->>>>>>> 26e2cea (register/login with validators)
-=======
-        classpath 'com.android.tools.build:gradle:7.2.0'
->>>>>>> 624b808 (fixed(july31))
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -34,14 +26,6 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 tasks.register("clean", Delete) {
-=======
-task clean(type: Delete) {
->>>>>>> 26e2cea (register/login with validators)
-=======
-task clean(type: Delete) {
->>>>>>> 624b808 (fixed(july31))
     delete rootProject.buildDir
 }

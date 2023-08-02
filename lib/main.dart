@@ -1,7 +1,9 @@
-import 'package:driverslogin/screen/home.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:u_traffic_driver/dregister.dart';
+import 'package:u_traffic_driver/home.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -20,7 +22,8 @@ class UTrafficDriver extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "U-Traffic Driver",
-      home: homeScreen(),
+      home: const DRegister(),
+      theme: ThemeData(fontFamily: GoogleFonts.inter().fontFamily),
     );
   }
 }

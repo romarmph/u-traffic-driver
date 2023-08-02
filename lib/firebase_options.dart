@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,19 +49,9 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCX82XgPZoqDJN4Xzc4Ty1SCQsDjRTATas',
-    appId: '1:481798215371:web:1948b97a10ea128051ed4e',
-    messagingSenderId: '481798215371',
-    projectId: 'u-traffic',
-    authDomain: 'u-traffic.firebaseapp.com',
-    storageBucket: 'u-traffic.appspot.com',
-    measurementId: 'G-TWLSVQ2YPR',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCA7CXiC2SA3a4y8mZNljvzvdD1Aber4GM',
-    appId: '1:481798215371:android:7deca3581c0bab7d51ed4e',
+    appId: '1:481798215371:android:b6f4490561967dcb51ed4e',
     messagingSenderId: '481798215371',
     projectId: 'u-traffic',
     storageBucket: 'u-traffic.appspot.com',
@@ -63,23 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCFFTvFbJQTdCLLvf93R8TYME-VmfOhW0w',
-    appId: '1:481798215371:ios:8ab8e0f7c17de3a051ed4e',
+    appId: '1:481798215371:ios:747a21922e6728c451ed4e',
     messagingSenderId: '481798215371',
     projectId: 'u-traffic',
     storageBucket: 'u-traffic.appspot.com',
-    iosClientId:
-        '481798215371-ngfr6otb1p8fk3qg9vvh6im4fvbb51e7.apps.googleusercontent.com',
-    iosBundleId: 'com.example.driverslogin',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCFFTvFbJQTdCLLvf93R8TYME-VmfOhW0w',
-    appId: '1:481798215371:ios:8ab8e0f7c17de3a051ed4e',
-    messagingSenderId: '481798215371',
-    projectId: 'u-traffic',
-    storageBucket: 'u-traffic.appspot.com',
-    iosClientId:
-        '481798215371-ngfr6otb1p8fk3qg9vvh6im4fvbb51e7.apps.googleusercontent.com',
-    iosBundleId: 'com.example.driverslogin',
+    iosClientId: '481798215371-ttiur776lo7hvce4rlvjd3rvf3mfmfo9.apps.googleusercontent.com',
+    iosBundleId: 'com.example.uTrafficDriver',
   );
 }

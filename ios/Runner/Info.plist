@@ -5,15 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-<<<<<<< HEAD
-<<<<<<< HEAD
 	<string>U Traffic Driver</string>
-=======
-	<string>Driverslogin</string>
->>>>>>> 26e2cea (register/login with validators)
-=======
-	<string>Driverslogin</string>
->>>>>>> 624b808 (fixed(july31))
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,15 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-<<<<<<< HEAD
-<<<<<<< HEAD
 	<string>u_traffic_driver</string>
-=======
-	<string>driverslogin</string>
->>>>>>> 26e2cea (register/login with validators)
-=======
-	<string>driverslogin</string>
->>>>>>> 624b808 (fixed(july31))
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

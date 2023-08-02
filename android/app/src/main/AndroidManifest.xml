@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application
-        android:label="u_traffic_driver"
-=======
-=======
->>>>>>> 624b808 (fixed(july31))
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.driverslogin">
+    package="com.example.u_traffic_driver">
    <application
-        android:label="driverslogin"
-<<<<<<< HEAD
->>>>>>> 26e2cea (register/login with validators)
-=======
->>>>>>> 624b808 (fixed(july31))
+        android:label="u_traffic_driver"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
