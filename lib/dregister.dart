@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:u_traffic_driver/config/device/device_constraint.dart';
 
 import 'config/themes/colors.dart';
 import 'config/themes/spacing.dart';
@@ -15,6 +16,9 @@ class DRegister extends StatefulWidget {
 class _DRegisterState extends State<DRegister> {
   @override
   Widget build(BuildContext context) {
+    final double height = deviceHeight(context);
+    final double width = deviceWidth(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
