@@ -3,75 +3,68 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:sign_in_button/sign_in_button.dart';
-import 'package:u_traffic_driver/Dinfo.dart';
+import 'package:u_traffic_driver/auth_service.dart';
 import 'package:u_traffic_driver/dlogin.dart';
-import 'package:u_traffic_driver/model/driver_model.dart';
 import 'package:u_traffic_driver/provider/driver_provider.dart';
 
 import 'config/themes/colors.dart';
 import 'config/themes/spacing.dart';
 import 'config/themes/textstyles.dart';
 
-class DRegister extends StatefulWidget {
-  const DRegister({super.key});
+class Dinfo extends StatefulWidget {
+  const Dinfo({super.key});
 
   @override
-  State<DRegister> createState() => _DRegisterState();
+  State<Dinfo> createState() => _DinfoState();
 }
 
-class _DRegisterState extends State<DRegister> {
+class _DinfoState extends State<Dinfo> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmpassController = TextEditingController();
-  // final firstNameController = TextEditingController();
-  // final middleNameController = TextEditingController();
-  // final lastNameController = TextEditingController();
-  // TextEditingController _birthdateController = TextEditingController();
-  // final idController = TextEditingController();
+  final firstNameController = TextEditingController();
+  final middleNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  TextEditingController _birthdateController = TextEditingController();
+  final idController = TextEditingController();
+  final phoneController = TextEditingController();
 
   var obscurePassword = true;
 
   final _formkey = GlobalKey<FormState>();
-
-  // final collectionPath = 'driversRegisterInfo';
+  
+  final collectionPath = 'drivers';
 
   void registerClient() async {
+
+    final provider = Provider.of<DriverProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthService>(context, listen: false);
+
     try {
       EasyLoading.show(
         status: 'Proccesing...',
       );
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
-      );
+      // UserCredential userCredential =
+      //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      //   email: provider.currentDriver.email,
+      //   password: provider.currentDriver.password,
+      // );
 
-      final driverProvider = Provider.of<DriverProvider>(context);
-
-      driverProvider.updateDriver(Driver(
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        birthDate: "",
-        email: emailController.text,
-        phone: "",
-        password: passwordController.text,
-      ));
-      
-
-      // String uid = userCredential.user!.uid;
-      // await FirebaseFirestore.instance.collection(collectionPath).doc(uid).set({
-      //   'id': 'null/test',
-      //   // 'firstName': firstNameController.text,
-      //   // 'middleName': middleNameController.text,
-      //   // 'lastName': lastNameController.text,
-      //   // 'birthDate': _birthdateController.text,
-      //   'email': emailController.text,
-      //   'password': passwordController.text,
-      // });
+      String uid = authProvider.currentuser!.id;
+      await FirebaseFirestore.instance.collection(collectionPath).doc(uid).set({
+        
+        'firstName': firstNameController.text,
+        'middleName': middleNameController.text,
+        'lastName': lastNameController.text,
+        'birthDate': _birthdateController.text,
+        'phonenumber': phoneController.text,
+        'email': authProvider.currentuser!.email,
+        // 'password': provider.currentDriver.password,
+      });
 
       EasyLoading.showSuccess('User account has been registered.');
     } on FirebaseAuthException catch (ex) {
@@ -91,7 +84,7 @@ class _DRegisterState extends State<DRegister> {
       }
       print(ex.code);
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Dinfo()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => DLogin()));
   }
 
   void validateInput() {
@@ -112,10 +105,10 @@ class _DRegisterState extends State<DRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Form(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Form(
           key: _formkey,
           child: SingleChildScrollView(
             child: Column(
@@ -133,13 +126,13 @@ class _DRegisterState extends State<DRegister> {
                       children: [
                         const SizedBox(height: USpace.space135),
                         Text(
-                          'Register',
+                          'Personal Information',
                           style: const UTextStyle().text4xlfontmedium.copyWith(
                                 color: UColors.white,
                               ),
                         ),
                         Text(
-                          'Create your Account',
+                          'Fill out this form',
                           style: const UTextStyle().textbasefontnormal.copyWith(
                                 color: UColors.white,
                               ),
@@ -158,55 +151,13 @@ class _DRegisterState extends State<DRegister> {
                       children: [
                         const SizedBox(height: USpace.space10),
                         Text(
-                          'Email or Phone number',
+                          'First Name',
                           style: const UTextStyle().textsmfontmedium.copyWith(
                                 color: UColors.gray900,
                               ),
                         ),
                         const SizedBox(height: USpace.space10),
-                        // Container(
-                        //   width: 365,
-                        //   height: 44,
-                        //   decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.circular(8),
-                        //     color: UColors.gray50,
-                        //     border: Border.all(
-                        //       color: UColors.gray300,
-                        //       width: 1,
-                        //     ),
-                        //   ),
-                        //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //   child: Row(
-                        //     children: [
-                        //       // const Icon(Icons.email, color: UColors.gray400),
-                        //       const SizedBox(width: USpace.space10),
-                        //       Expanded(
-                        //         child: TextFormField(
-                        //           validator: (value) {
-                        //     if (value == null || value.isEmpty) {
-                        //       return '*Required. Please enter an email address';
-                        //     }
-                        //     if (!EmailValidator.validate(value)) {
-                        //       return 'Pleaser enter a valid email';
-                        //     }
-                        //     return null;
-                        //   },
-                        //   controller: emailController,
 
-                        //           decoration: InputDecoration(
-                        //             prefixIcon: Icon(Icons.email, color: UColors.gray400),
-                        //             hintText: 'Enter your email or phone number here',
-                        //             hintStyle:
-                        //                 const UTextStyle().textbasefontnormal.copyWith(
-                        //                       color: UColors.gray500,
-                        //                     ),
-                        //             border: InputBorder.none,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                         Row(
                           children: [
                             // const Icon(Icons.email, color: UColors.gray400),
@@ -215,20 +166,21 @@ class _DRegisterState extends State<DRegister> {
                               child: TextFormField(
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter an email address';
+                                    return '*Required. Please enter a First Name';
                                   }
-                                  if (!EmailValidator.validate(value)) {
-                                    return 'Pleaser enter a valid email';
+                                  if (value!.isEmpty ||
+                                      !RegExp(r'^[a-z A-Z]+$')
+                                          .hasMatch(value!)) {
+                                    return 'Pleaser enter a valid First Name';
                                   }
                                   return null;
                                 },
-                                controller: emailController,
+                                controller: firstNameController,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12)),
-                                  prefixIcon: Icon(Icons.email),
-                                  hintText:
-                                      'Enter your email or phone number here',
+                                  // prefixIcon: Icon(Icons.email),
+                                  hintText: 'Enter your first name here',
                                   hintStyle: const UTextStyle()
                                       .textbasefontnormal
                                       .copyWith(
@@ -246,89 +198,45 @@ class _DRegisterState extends State<DRegister> {
                   ),
                 ),
                 Positioned(
-                  top: 340,
+                  top: 260,
                   left: 14,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: USpace.space10),
                         Text(
-                          'Password',
+                          'Middle Name',
                           style: const UTextStyle().textsmfontmedium.copyWith(
                                 color: UColors.gray900,
                               ),
                         ),
                         const SizedBox(height: USpace.space10),
-                        // Container(
-                        //   width: 365,
-                        //   height: 44,
-                        //   decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.circular(8),
-                        //     color: UColors.gray50,
-                        //     border: Border.all(
-                        //       color: UColors.gray300,
-                        //       width: 1,
-                        //     ),
-                        //   ),
-                        //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //   child: Row(
-                        //     children: [
-                        //       const Icon(Icons.lock, color: UColors.gray400),
-                        //       const SizedBox(width: USpace.space10),
-                        //       Expanded(
-                        //         child: TextFormField(
-                        //           validator: (value) {
-                        //     if (value == null || value.isEmpty) {
-                        //       return '*Required. Please enter your password';
-                        //     }
-                        //     if (!RegExp(r'^[a-zA-Z0-9]+$')
-                        //         .hasMatch(passwordController.text)) {
-                        //       return 'Password must contain letters and numbers.';
-                        //     }
 
-                        //     return null;
-                        //   },
-
-                        //   controller: passwordController,
-
-                        //           obscureText: true,
-                        //           decoration: InputDecoration(
-                        //             hintText: 'Enter your password here',
-                        //             hintStyle:
-                        //                 const UTextStyle().textbasefontnormal.copyWith(
-                        //                       color: UColors.gray500,
-                        //                     ),
-                        //             border: InputBorder.none,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                         Row(
                           children: [
+                            // const Icon(Icons.email, color: UColors.gray400),
                             const SizedBox(width: USpace.space4),
                             Expanded(
                               child: TextFormField(
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter your password';
+                                    return '*Required. Please enter a Middle Name';
                                   }
-                                  if (!RegExp(r'^[a-zA-Z0-9]+$')
-                                      .hasMatch(passwordController.text)) {
-                                    return 'Password must contain letters and numbers.';
+                                  if (value!.isEmpty ||
+                                      !RegExp(r'^[a-z A-Z]+$')
+                                          .hasMatch(value!)) {
+                                    return 'Pleaser enter a valid middle name';
                                   }
-
                                   return null;
                                 },
-                                controller: passwordController,
-                                obscureText: true,
+                                controller: middleNameController,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12)),
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: 'Enter your password here',
+                                  // prefixIcon: Icon(Icons.email),
+                                  hintText: 'Enter your middle name here',
                                   hintStyle: const UTextStyle()
                                       .textbasefontnormal
                                       .copyWith(
@@ -339,94 +247,51 @@ class _DRegisterState extends State<DRegister> {
                             ),
                           ],
                         ),
-                        // const SizedBox(height: USpace.space10),
+
+                        // const SizedBox(height: USpace.space4),
                       ],
                     ),
                   ),
                 ),
                 Positioned(
-                  top: 420,
+                  top: 260,
                   left: 14,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: USpace.space10),
                         Text(
-                          'Confirmation Password',
+                          'Last Name',
                           style: const UTextStyle().textsmfontmedium.copyWith(
                                 color: UColors.gray900,
                               ),
                         ),
                         const SizedBox(height: USpace.space10),
-                        // Container(
-                        //   width: 365,
-                        //   height: 44,
-                        //   decoration: BoxDecoration(
-                        //     borderRadius: BorderRadius.circular(8),
-                        //     color: UColors.gray50,
-                        //     border: Border.all(
-                        //       color: UColors.gray300,
-                        //       width: 1,
-                        //     ),
-                        //   ),
-                        //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                        //   child: Row(
-                        //     children: [
-                        //       const Icon(Icons.lock, color: UColors.gray400),
-                        //       const SizedBox(width: USpace.space10),
-                        //       Expanded(
-                        //         child: TextFormField(
 
-                        //           validator: (value) {
-                        //     if (value == null || value.isEmpty) {
-                        //       return '*Required. Please enter your password';
-                        //     }
-                        //     if (value != passwordController.text) {
-                        //       return 'Password don\'t match.';
-                        //     }
-
-                        //     return null;
-                        //   },
-                        //   controller: confirmpassController,
-
-                        //           obscureText: true,
-                        //           decoration: InputDecoration(
-                        //             hintText: 'Confirm your password here',
-                        //             hintStyle:
-                        //                 const UTextStyle().textbasefontnormal.copyWith(
-                        //                       color: UColors.gray500,
-                        //                     ),
-                        //             border: InputBorder.none,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                         Row(
                           children: [
-                            // const Icon(Icons.lock, color: UColors.gray400),
                             const SizedBox(width: USpace.space4),
                             Expanded(
                               child: TextFormField(
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter your password';
+                                    return '*Required. Please enter a Last Name';
                                   }
-                                  if (value != passwordController.text) {
-                                    return 'Password don\'t match.';
+                                  if (value!.isEmpty ||
+                                      !RegExp(r'^[a-z A-Z]+$')
+                                          .hasMatch(value!)) {
+                                    return 'Pleaser enter a valid Last Name';
                                   }
-
                                   return null;
                                 },
-                                controller: confirmpassController,
-                                obscureText: true,
+                                controller: lastNameController,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(12)),
-                                  prefixIcon: Icon(Icons.lock),
-                                  hintText: 'Confirm your password here',
+                                  // prefixIcon: Icon(Icons.email),
+                                  hintText: 'Enter your last name here',
                                   hintStyle: const UTextStyle()
                                       .textbasefontnormal
                                       .copyWith(
@@ -437,7 +302,124 @@ class _DRegisterState extends State<DRegister> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: USpace.space8),
+
+                        // const SizedBox(height: USpace.space4),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 260,
+                  left: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: USpace.space10),
+                        Text(
+                          'Birthdate',
+                          style: const UTextStyle().textsmfontmedium.copyWith(
+                                color: UColors.gray900,
+                              ),
+                        ),
+                        const SizedBox(height: USpace.space10),
+
+                        Row(
+                          children: [
+                            // const Icon(Icons.email, color: UColors.gray400),
+                            const SizedBox(width: USpace.space4),
+                            Expanded(
+                              child: TextField(
+                                controller: _birthdateController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  prefixIcon: Icon(Icons.calendar_month),
+                                  hintText: 'Select your birthdate',
+                                  hintStyle: const UTextStyle()
+                                      .textbasefontnormal
+                                      .copyWith(
+                                        color: UColors.gray500,
+                                      ),
+                                ),
+                                onTap: () async {
+                                  DateTime? pickeddate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime(2024));
+
+                                  if (pickeddate != null) {
+                                    setState(() {
+                                      _birthdateController.text =
+                                          DateFormat('yyyy-MM-dd')
+                                              .format(pickeddate);
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // const SizedBox(height: USpace.space4),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 260,
+                  left: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: USpace.space10),
+                        Text(
+                          'Phone number',
+                          style: const UTextStyle().textsmfontmedium.copyWith(
+                                color: UColors.gray900,
+                              ),
+                        ),
+                        const SizedBox(height: USpace.space10),
+
+                        Row(
+                          children: [
+                            // const Icon(Icons.email, color: UColors.gray400),
+                            const SizedBox(width: USpace.space4),
+                            Expanded(
+                              child: TextFormField(
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '*Required. Please enter a Phone Number';
+                                  }
+                                  if (value!.isEmpty ||
+                                      !RegExp(r'^(?:[+0]9)?[0-9]{11}$')
+                                          .hasMatch(value!)) {
+                                    return 'Pleaser enter a valid Phone Number';
+                                  }
+                                  return null;
+                                },
+                                controller: phoneController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  // prefixIcon: Icon(Icons.email),
+                                  hintText: 'Enter your phone number here',
+                                  hintStyle: const UTextStyle()
+                                      .textbasefontnormal
+                                      .copyWith(
+                                        color: UColors.gray500,
+                                      ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // const SizedBox(height: USpace.space4),
                       ],
                     ),
                   ),
@@ -447,7 +429,6 @@ class _DRegisterState extends State<DRegister> {
                   left: 16,
                   right: 16,
                   child: Container(
-                    width: 380,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Center(
                       child: ElevatedButton(
@@ -501,36 +482,6 @@ class _DRegisterState extends State<DRegister> {
                 //         ],
                 //       ),
                 //     )),
-                Text(
-                  'Or Sign Up With',
-                  textAlign: TextAlign.left,
-                  style: const UTextStyle().textsmfontnormal.copyWith(
-                        color: UColors.gray400,
-                      ),
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      width: 120,
-                      child: SignInButton(
-                        Buttons.google,
-                        onPressed: () {},
-                        text: 'Google',
-                      ),
-                    ),
-                    Container(
-                      width: 120,
-                      child: SignInButton(
-                        Buttons.facebook,
-                        onPressed: () {},
-                        text: 'Facebook',
-                      ),
-                    ),
-                  ],
-                ),
-
                 // Positioned(
                 //   top: 600,
                 //   right: 210,
@@ -569,29 +520,29 @@ class _DRegisterState extends State<DRegister> {
                 //     ],
                 //   ),
                 // ),
-                Positioned(
-                  top: 690,
-                  left: 35,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Row(
-                      children: [
-                        Text(
-                          "Already have an account? ",
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.gray600,
-                              ),
-                        ),
-                        Text(
-                          'Login instead',
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.blue700,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   top: 690,
+                //   left: 35,
+                //   child: TextButton(
+                //     onPressed: () {},
+                //     child: Row(
+                //       children: [
+                //         Text(
+                //           "Already have an account? ",
+                //           style: const UTextStyle().textsmfontmedium.copyWith(
+                //                 color: UColors.gray600,
+                //               ),
+                //         ),
+                //         Text(
+                //           'Login instead',
+                //           style: const UTextStyle().textsmfontmedium.copyWith(
+                //                 color: UColors.blue700,
+                //               ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

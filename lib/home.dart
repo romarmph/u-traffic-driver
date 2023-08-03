@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:u_traffic_driver/auth_service.dart';
 import 'package:u_traffic_driver/config/themes/spacing.dart';
 
 import 'components/appdrawer.dart';
@@ -212,6 +214,14 @@ class _DHomeState extends State<DHome> {
                                 ),
                           )),
                     ),
+
+                  ElevatedButton(onPressed: () {
+                    final provider = Provider.of<AuthService>(context, listen: false);
+                    provider.signOut();
+                  }, child: Text(
+                    'logout'
+                  ))
+
                   ],
                 ),
               ),
