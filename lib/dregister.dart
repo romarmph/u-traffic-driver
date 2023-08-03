@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:sign_in_button/sign_in_button.dart';
+import 'package:u_traffic_driver/config/device/device_constraint.dart';
 import 'package:u_traffic_driver/Dinfo.dart';
 import 'package:u_traffic_driver/dlogin.dart';
 import 'package:u_traffic_driver/model/driver_model.dart';
@@ -112,6 +113,9 @@ class _DRegisterState extends State<DRegister> {
 
   @override
   Widget build(BuildContext context) {
+    final double height = deviceHeight(context);
+    final double width = deviceWidth(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(

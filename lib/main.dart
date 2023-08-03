@@ -41,7 +41,10 @@ class UTrafficDriver extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: "U-Traffic Driver",
         // home: const DRegister(),
-        theme: ThemeData(fontFamily: GoogleFonts.inter().fontFamily),
+        theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: GoogleFonts.inter().fontFamily,
+      ),
         builder: EasyLoading.init(),
         initialRoute: "/",
         routes: {
