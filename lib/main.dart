@@ -11,6 +11,7 @@ import 'package:u_traffic_driver/provider/driver_provider.dart';
 import 'package:u_traffic_driver/wrapper.dart';
 import 'auth_service.dart';
 import 'dlogin.dart';
+import 'dregister.dart';
 import 'firebase_options.dart';
 
 void main() async {
