@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +25,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
   final firstNameController = TextEditingController();
   final middleNameController = TextEditingController();
   final lastNameController = TextEditingController();
-  final _birthdateController = TextEditingController();
+  final birthdateController = TextEditingController();
   final idController = TextEditingController();
   final phoneController = TextEditingController();
 
@@ -43,41 +42,20 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
       EasyLoading.show(
         status: 'Proccesing...',
       );
-      // UserCredential userCredential =
-      //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      //   email: provider.currentDriver.email,
-      //   password: provider.currentDriver.password,
-      // );
 
       String uid = authProvider.currentuser!.uid;
       await FirebaseFirestore.instance.collection(collectionPath).doc(uid).set({
         'firstName': firstNameController.text,
         'middleName': middleNameController.text,
         'lastName': lastNameController.text,
-        'birthDate': _birthdateController.text,
+        'birthDate': birthdateController.text,
         'phonenumber': phoneController.text,
         'email': authProvider.currentuser!.email,
         // 'password': provider.currentDriver.password,
       });
 
       EasyLoading.showSuccess('User account has been registered.');
-    } on FirebaseAuthException catch (ex) {
-      if (ex.code == 'weak-password') {
-        EasyLoading.showError(
-            'Your password is weak. Please enter more than 6 characters.');
-        return;
-      }
-      if (ex.code == 'email-already-in-use') {
-        EasyLoading.showError(
-            'Your email has already taken. Please enter another email address.');
-        return;
-      }
-      if (ex.code == 'null-credential') {
-        EasyLoading.showError(
-            'An error eccoured while creating your account. Please try again');
-      }
-      print(ex.code);
-    }
+    } on FirebaseFirestore catch (e) {}
     // Navigator.push(context, MaterialPageRoute(builder: (context) => DLogin()));
   }
 
@@ -127,325 +105,128 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  child: Container(
-                    width: 700,
-                    height: 230,
-                    color: UColors.blue700,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: USpace.space135),
-                        Text(
-                          'Personal Information',
-                          style: const UTextStyle().text4xlfontmedium.copyWith(
-                                color: UColors.white,
-                              ),
-                        ),
-                        Text(
-                          'Fill out this form',
-                          style: const UTextStyle().textbasefontnormal.copyWith(
-                                color: UColors.white,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 260,
-                  left: 14,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: USpace.space10),
-                        Text(
-                          'First Name',
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.gray900,
-                              ),
-                        ),
-                        const SizedBox(height: USpace.space10),
-
-                        Row(
-                          children: [
-                            // const Icon(Icons.email, color: UColors.gray400),
-                            const SizedBox(width: USpace.space4),
-                            Expanded(
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter a First Name';
-                                  }
-                                  if (value.isEmpty ||
-                                      !RegExp(r'^[a-z A-Z]+$')
-                                          .hasMatch(value)) {
-                                    return 'Pleaser enter a valid First Name';
-                                  }
-                                  return null;
-                                },
-                                controller: firstNameController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  // prefixIcon: Icon(Icons.email),
-                                  hintText: 'Enter your first name here',
-                                  hintStyle: const UTextStyle()
-                                      .textbasefontnormal
-                                      .copyWith(
-                                        color: UColors.gray500,
-                                      ),
-                                ),
-                              ),
+                Container(
+                  width: 700,
+                  height: 230,
+                  color: UColors.blue700,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: USpace.space135),
+                      Text(
+                        'Personal Information',
+                        style: const UTextStyle().text4xlfontmedium.copyWith(
+                              color: UColors.white,
                             ),
-                          ],
-                        ),
-
-                        // const SizedBox(height: USpace.space4),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 260,
-                  left: 14,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: USpace.space10),
-                        Text(
-                          'Middle Name',
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.gray900,
-                              ),
-                        ),
-                        const SizedBox(height: USpace.space10),
-
-                        Row(
-                          children: [
-                            // const Icon(Icons.email, color: UColors.gray400),
-                            const SizedBox(width: USpace.space4),
-                            Expanded(
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter a Middle Name';
-                                  }
-                                  if (value.isEmpty ||
-                                      !RegExp(r'^[a-z A-Z]+$')
-                                          .hasMatch(value)) {
-                                    return 'Pleaser enter a valid middle name';
-                                  }
-                                  return null;
-                                },
-                                controller: middleNameController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  // prefixIcon: Icon(Icons.email),
-                                  hintText: 'Enter your middle name here',
-                                  hintStyle: const UTextStyle()
-                                      .textbasefontnormal
-                                      .copyWith(
-                                        color: UColors.gray500,
-                                      ),
-                                ),
-                              ),
+                      ),
+                      Text(
+                        'Fill out this form',
+                        style: const UTextStyle().textbasefontnormal.copyWith(
+                              color: UColors.white,
                             ),
-                          ],
-                        ),
-
-                        // const SizedBox(height: USpace.space4),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                Positioned(
-                  top: 260,
-                  left: 14,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: USpace.space10),
-                        Text(
-                          'Last Name',
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.gray900,
-                              ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: USpace.space12),
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '*Required. Please enter a First Name';
+                          }
+                          if (value.isEmpty ||
+                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                            return 'Pleaser enter a valid First Name';
+                          }
+                          return null;
+                        },
+                        controller: firstNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'First Name',
                         ),
-                        const SizedBox(height: USpace.space10),
-
-                        Row(
-                          children: [
-                            const SizedBox(width: USpace.space4),
-                            Expanded(
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter a Last Name';
-                                  }
-                                  if (value!.isEmpty ||
-                                      !RegExp(r'^[a-z A-Z]+$')
-                                          .hasMatch(value!)) {
-                                    return 'Pleaser enter a valid Last Name';
-                                  }
-                                  return null;
-                                },
-                                controller: lastNameController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  // prefixIcon: Icon(Icons.email),
-                                  hintText: 'Enter your last name here',
-                                  hintStyle: const UTextStyle()
-                                      .textbasefontnormal
-                                      .copyWith(
-                                        color: UColors.gray500,
-                                      ),
-                                ),
-                              ),
-                            ),
-                          ],
+                      ),
+                      const SizedBox(height: USpace.space12),
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '* Required. Please enter a Middle Name';
+                          }
+                          if (value.isEmpty ||
+                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                            return 'Pleaser enter a valid middle name';
+                          }
+                          return null;
+                        },
+                        controller: middleNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Middle Name',
                         ),
-
-                        // const SizedBox(height: USpace.space4),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 260,
-                  left: 14,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: USpace.space10),
-                        Text(
-                          'Birthdate',
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.gray900,
-                              ),
+                      ),
+                      const SizedBox(height: USpace.space12),
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '*Required. Please enter a Last Name';
+                          }
+                          if (value.isEmpty ||
+                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
+                            return 'Pleaser enter a valid Last Name';
+                          }
+                          return null;
+                        },
+                        controller: lastNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Last Name',
                         ),
-                        const SizedBox(height: USpace.space10),
-
-                        Row(
-                          children: [
-                            // const Icon(Icons.email, color: UColors.gray400),
-                            const SizedBox(width: USpace.space4),
-                            Expanded(
-                              child: TextField(
-                                controller: _birthdateController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  prefixIcon: Icon(Icons.calendar_month),
-                                  hintText: 'Select your birthdate',
-                                  hintStyle: const UTextStyle()
-                                      .textbasefontnormal
-                                      .copyWith(
-                                        color: UColors.gray500,
-                                      ),
-                                ),
-                                onTap: () async {
-                                  DateTime? pickeddate = await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(1900),
-                                      lastDate: DateTime(2024));
-
-                                  if (pickeddate != null) {
-                                    setState(() {
-                                      _birthdateController.text =
-                                          DateFormat('yyyy-MM-dd')
-                                              .format(pickeddate);
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
+                      ),
+                      const SizedBox(height: USpace.space12),
+                      TextFormField(
+                        canRequestFocus: false,
+                        controller: birthdateController,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.calendar_month),
+                          labelText: 'Birthdate',
                         ),
+                        onTap: () async {
+                          DateTime? pickeddate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(2024));
 
-                        // const SizedBox(height: USpace.space4),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 260,
-                  left: 14,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: USpace.space10),
-                        Text(
-                          'Phone number',
-                          style: const UTextStyle().textsmfontmedium.copyWith(
-                                color: UColors.gray900,
-                              ),
+                          if (pickeddate != null) {
+                            setState(() {
+                              birthdateController.text =
+                                  DateFormat('yyyy-MM-dd').format(pickeddate);
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(height: USpace.space12),
+                      TextFormField(
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '*Required. Please enter a Phone Number';
+                          }
+                          if (value.isEmpty ||
+                              !RegExp(r'^(?:[+0]9)?[0-9]{11}$')
+                                  .hasMatch(value)) {
+                            return 'Pleaser enter a valid Phone Number';
+                          }
+                          return null;
+                        },
+                        controller: phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone No.',
                         ),
-                        const SizedBox(height: USpace.space10),
-
-                        Row(
-                          children: [
-                            // const Icon(Icons.email, color: UColors.gray400),
-                            const SizedBox(width: USpace.space4),
-                            Expanded(
-                              child: TextFormField(
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return '*Required. Please enter a Phone Number';
-                                  }
-                                  if (value!.isEmpty ||
-                                      !RegExp(r'^(?:[+0]9)?[0-9]{11}$')
-                                          .hasMatch(value!)) {
-                                    return 'Pleaser enter a valid Phone Number';
-                                  }
-                                  return null;
-                                },
-                                controller: phoneController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  // prefixIcon: Icon(Icons.email),
-                                  hintText: 'Enter your phone number here',
-                                  hintStyle: const UTextStyle()
-                                      .textbasefontnormal
-                                      .copyWith(
-                                        color: UColors.gray500,
-                                      ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // const SizedBox(height: USpace.space4),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 510,
-                  left: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
-                      child: ElevatedButton(
+                      ),
+                      const SizedBox(height: USpace.space12),
+                      ElevatedButton(
                         onPressed: validateInput,
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
@@ -461,7 +242,6 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(width: USpace.space4),
                             Text(
                               'Create Account',
                               style: const UTextStyle()
@@ -473,90 +253,9 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                           ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-                // Positioned(
-                //     top: 570,
-                //     left: 130,
-                //     child: Container(
-                //       decoration: const BoxDecoration(),
-                //       padding: const EdgeInsets.symmetric(
-                //           horizontal: 16, vertical: 16),
-                //       child: Row(
-                //         mainAxisSize: MainAxisSize.min,
-                //         children: <Widget>[
-                //           Text(
-                //             'Or Sign Up With',
-                //             textAlign: TextAlign.left,
-                //             style: const UTextStyle().textsmfontnormal.copyWith(
-                //                   color: UColors.gray400,
-                //                 ),
-                //           ),
-                //         ],
-                //       ),
-                //     )),
-                // Positioned(
-                //   top: 600,
-                //   right: 210,
-                //   child: Row(
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: <Widget>[
-                //       Container(
-                //         width: 120,
-                //         padding: const EdgeInsets.symmetric(vertical: 20),
-                //         child: SignInButton(
-                //           Buttons.google,
-                //           onPressed: () {},
-                //           text: 'Google',
-                //         ),
-                //       ),
-                //       const SizedBox(width: USpace.space8),
-                //     ],
-                //   ),
-                // ),
-                // Positioned(
-                //   top: 600,
-                //   right: 50,
-                //   child: Row(
-                //     mainAxisSize: MainAxisSize.min,
-                //     children: <Widget>[
-                //       Container(
-                //         width: 120,
-                //         padding: const EdgeInsets.symmetric(vertical: 20),
-                //         child: SignInButton(
-                //           Buttons.facebook,
-                //           onPressed: () {},
-                //           text: 'Facebook',
-                //         ),
-                //       ),
-                //       const SizedBox(width: USpace.space8),
-                //     ],
-                //   ),
-                // ),
-                // Positioned(
-                //   top: 690,
-                //   left: 35,
-                //   child: TextButton(
-                //     onPressed: () {},
-                //     child: Row(
-                //       children: [
-                //         Text(
-                //           "Already have an account? ",
-                //           style: const UTextStyle().textsmfontmedium.copyWith(
-                //                 color: UColors.gray600,
-                //               ),
-                //         ),
-                //         Text(
-                //           'Login instead',
-                //           style: const UTextStyle().textsmfontmedium.copyWith(
-                //                 color: UColors.blue700,
-                //               ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
               ],
             ),
           ),

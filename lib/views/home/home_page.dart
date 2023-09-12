@@ -1,7 +1,7 @@
-import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
+import 'package:u_traffic_driver/config/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/config/utils/exports/themes.dart';
+import 'package:u_traffic_driver/config/utils/exports/packages.dart';
+import 'package:u_traffic_driver/config/utils/exports/services.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

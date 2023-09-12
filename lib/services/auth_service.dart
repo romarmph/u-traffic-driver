@@ -1,6 +1,6 @@
-import 'package:u_traffic_driver/utils/exports/packages.dart' as auth;
-import 'package:u_traffic_driver/utils/exports/packages.dart';
-import 'package:u_traffic_driver/utils/exports/models.dart';
+import 'package:u_traffic_driver/config/utils/exports/packages.dart' as auth;
+import 'package:u_traffic_driver/config/utils/exports/packages.dart';
+import 'package:u_traffic_driver/config/utils/exports/models.dart';
 
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;

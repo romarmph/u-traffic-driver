@@ -9,6 +9,8 @@ import 'services/auth_service.dart';
 import 'firebase_options.dart';
 import 'views/wrapper.dart';
 
+import 'package:u_traffic_driver/config/utils/exports/themes.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -34,10 +36,31 @@ class UTrafficDriver extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "U-Traffic Driver",
-        // home: const DHome(),
         theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: UColors.blue600,
+          ),
           useMaterial3: true,
           fontFamily: GoogleFonts.inter().fontFamily,
+          elevatedButtonTheme: elevatedButtonTheme,
+          inputDecorationTheme: inputDecorationTheme,
+          textButtonTheme: textButtonTheme,
+          floatingActionButtonTheme: fabTheme,
+          appBarTheme: appBarTheme,
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: OutlinedButton.styleFrom(
+              textStyle: const UTextStyle().textbasefontmedium,
+              side: const BorderSide(
+                color: UColors.blue500,
+                width: 1.5,
+              ),
+              foregroundColor: UColors.blue500,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          scaffoldBackgroundColor: UColors.white,
         ),
         builder: EasyLoading.init(),
         initialRoute: "/",
