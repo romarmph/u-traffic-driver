@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
-import 'auth_service.dart';
-import 'config/themes/colors.dart';
-import 'config/themes/spacing.dart';
-import 'config/themes/textstyles.dart';
+import '../../services/auth_service.dart';
+import '../../config/themes/colors.dart';
+import '../../config/themes/spacing.dart';
+import '../../config/themes/textstyles.dart';
 
-class DLogin extends StatefulWidget {
-  const DLogin({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<DLogin> createState() => _DLoginState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _DLoginState extends State<DLogin> {
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -44,7 +43,6 @@ class _DLoginState extends State<DLogin> {
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
-
           child: Column(
             children: [
               Positioned(
@@ -97,7 +95,7 @@ class _DLoginState extends State<DLogin> {
                             ),
                       ),
                       const SizedBox(height: USpace.space10),
-        
+
                       Row(
                         children: [
                           // const Icon(Icons.email, color: UColors.gray400),
@@ -113,10 +111,10 @@ class _DLoginState extends State<DLogin> {
                               //   }
                               //   return null;
                               // },
-        
+
                               // controller: emailController,
                               controller: _emailController,
-        
+
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12)),
@@ -138,7 +136,7 @@ class _DLoginState extends State<DLogin> {
                           ),
                         ],
                       ),
-        
+
                       // const SizedBox(height: USpace.space4),
                     ],
                   ),
@@ -234,9 +232,10 @@ class _DLoginState extends State<DLogin> {
                           const SizedBox(width: USpace.space8),
                           Text(
                             'Login',
-                            style: const UTextStyle().textbasefontmedium.copyWith(
-                                  color: UColors.white,
-                                ),
+                            style:
+                                const UTextStyle().textbasefontmedium.copyWith(
+                                      color: UColors.white,
+                                    ),
                           ),
                         ],
                       ),
@@ -249,8 +248,8 @@ class _DLoginState extends State<DLogin> {
                   left: 130,
                   child: Container(
                     decoration: const BoxDecoration(),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[

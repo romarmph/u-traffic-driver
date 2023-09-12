@@ -1,0 +1,1 @@
+export 'package:u_traffic_driver/model/driver_model.dart';

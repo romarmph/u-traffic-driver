@@ -1,47 +1,42 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
-import 'package:sign_in_button/sign_in_button.dart';
-import 'package:u_traffic_driver/auth_service.dart';
-import 'package:u_traffic_driver/dlogin.dart';
-import 'package:u_traffic_driver/provider/driver_provider.dart';
+import 'package:u_traffic_driver/services/auth_service.dart';
 
-import 'config/themes/colors.dart';
-import 'config/themes/spacing.dart';
-import 'config/themes/textstyles.dart';
+import '../../config/themes/colors.dart';
+import '../../config/themes/spacing.dart';
+import '../../config/themes/textstyles.dart';
 
-class Dinfo extends StatefulWidget {
-  const Dinfo({super.key});
+class CompleteInfoPage extends StatefulWidget {
+  const CompleteInfoPage({super.key});
 
   @override
-  State<Dinfo> createState() => _DinfoState();
+  State<CompleteInfoPage> createState() => _CompleteInfoPageState();
 }
 
-class _DinfoState extends State<Dinfo> {
+class _CompleteInfoPageState extends State<CompleteInfoPage>
+    with WidgetsBindingObserver {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmpassController = TextEditingController();
   final firstNameController = TextEditingController();
   final middleNameController = TextEditingController();
   final lastNameController = TextEditingController();
-  TextEditingController _birthdateController = TextEditingController();
+  final _birthdateController = TextEditingController();
   final idController = TextEditingController();
   final phoneController = TextEditingController();
 
   var obscurePassword = true;
 
   final _formkey = GlobalKey<FormState>();
-  
+
   final collectionPath = 'drivers';
 
   void registerClient() async {
-
-    final provider = Provider.of<DriverProvider>(context, listen: false);
     final authProvider = Provider.of<AuthService>(context, listen: false);
 
     try {
@@ -54,9 +49,8 @@ class _DinfoState extends State<Dinfo> {
       //   password: provider.currentDriver.password,
       // );
 
-      String uid = authProvider.currentuser!.id;
+      String uid = authProvider.currentuser!.uid;
       await FirebaseFirestore.instance.collection(collectionPath).doc(uid).set({
-        
         'firstName': firstNameController.text,
         'middleName': middleNameController.text,
         'lastName': lastNameController.text,
@@ -84,7 +78,7 @@ class _DinfoState extends State<Dinfo> {
       }
       print(ex.code);
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context) => DLogin()));
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => DLogin()));
   }
 
   void validateInput() {
@@ -100,6 +94,26 @@ class _DinfoState extends State<Dinfo> {
             Navigator.pop(context);
             registerClient();
           });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      // user is about to close the app: perform logout
+      AuthService().signOut();
     }
   }
 
@@ -168,9 +182,9 @@ class _DinfoState extends State<Dinfo> {
                                   if (value == null || value.isEmpty) {
                                     return '*Required. Please enter a First Name';
                                   }
-                                  if (value!.isEmpty ||
+                                  if (value.isEmpty ||
                                       !RegExp(r'^[a-z A-Z]+$')
-                                          .hasMatch(value!)) {
+                                          .hasMatch(value)) {
                                     return 'Pleaser enter a valid First Name';
                                   }
                                   return null;
@@ -224,9 +238,9 @@ class _DinfoState extends State<Dinfo> {
                                   if (value == null || value.isEmpty) {
                                     return '*Required. Please enter a Middle Name';
                                   }
-                                  if (value!.isEmpty ||
+                                  if (value.isEmpty ||
                                       !RegExp(r'^[a-z A-Z]+$')
-                                          .hasMatch(value!)) {
+                                          .hasMatch(value)) {
                                     return 'Pleaser enter a valid middle name';
                                   }
                                   return null;

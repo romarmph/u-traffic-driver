@@ -3,16 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:u_traffic_driver/Dinfo.dart';
-import 'package:u_traffic_driver/Dotp.dart';
-import 'package:u_traffic_driver/dForgotPass.dart';
-import 'package:u_traffic_driver/home.dart';
+
 import 'package:u_traffic_driver/provider/driver_provider.dart';
-import 'package:u_traffic_driver/wrapper.dart';
-import 'auth_service.dart';
-import 'dlogin.dart';
-import 'dregister.dart';
+import 'services/auth_service.dart';
 import 'firebase_options.dart';
+import 'views/wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,15 +36,13 @@ class UTrafficDriver extends StatelessWidget {
         title: "U-Traffic Driver",
         // home: const DHome(),
         theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: GoogleFonts.inter().fontFamily,
-      ),
+          useMaterial3: true,
+          fontFamily: GoogleFonts.inter().fontFamily,
+        ),
         builder: EasyLoading.init(),
         initialRoute: "/",
         routes: {
-          "/": (context) => const Wrapper(),
-          "/login": (context) => const DLogin(),
-          "/register": (context) => const DRegister(),
+          '/': (context) => const WidgetWrapper(),
         },
       ),
     );

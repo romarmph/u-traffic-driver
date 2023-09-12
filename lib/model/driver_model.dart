@@ -1,25 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Driver {
-   String? id;
-   String firstName;
-   String middleName;
-   String lastName;
-   String? suffix;
-   String birthDate;
-   String email;
-   String phone;
-  //  bool accountCompleted;
+  String? id;
+  String firstName;
+  String middleName;
+  String lastName;
+  String? suffix;
+  Timestamp? birthDate;
+  String email;
+  String phone;
+  bool isProfileComplete = false;
   String password;
 
-   Driver({
+  Driver({
     this.id,
     this.suffix,
     required this.firstName,
     required this.middleName,
     required this.lastName,
-    required this.birthDate,
+    this.birthDate,
     required this.email,
     required this.phone,
-    // required this.accountCompleted,
+    required this.isProfileComplete,
     required this.password,
   });
 
@@ -41,14 +43,15 @@ class Driver {
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
       id: json["id"],
-      suffix: json["suffix"],
-      firstName: json["firstName"],
-      middleName: json["middleName"],
-      lastName: json["lastName"],
+      suffix: json["suffix"] ?? "",
+      firstName: json["firstName"] ?? "",
+      middleName: json["middleName"] ?? "",
+      lastName: json["lastName"] ?? "",
       birthDate: json["birthDate"],
       email: json["email"],
-      phone: json["phone"],
-      password: json["password"],
+      phone: json["phone"] ?? "",
+      password: json["password"] ?? "",
+      isProfileComplete: json["isProfileComplete"],
     );
   }
 
