@@ -49,26 +49,13 @@ class LicenseCard extends StatelessWidget {
                   detail: licenseDetails.licenseNumber,
                   label: 'License Number',
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: LicenseDetailTile(
-                        detail:
-                            licenseDetails.dateIssued.toDate().toISO8601Date,
-                        label: 'Issued Date',
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: LicenseDetailTile(
-                        detail:
-                            licenseDetails.dateIssued.toDate().toISO8601Date,
-                        label: 'Expiration Date',
-                      ),
-                    ),
-                  ],
+                Expanded(
+                  flex: 3,
+                  child: LicenseDetailTile(
+                    detail:
+                        licenseDetails.expirationDate.toDate().toISO8601Date,
+                    label: 'Expiration Date',
+                  ),
                 ),
               ],
             ),

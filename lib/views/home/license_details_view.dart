@@ -102,7 +102,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           "Middle Name",
                         ),
                         _detailCard(
-                          widget.licenseDetails.dateOfBirth
+                          widget.licenseDetails.birthdate
                               .toDate()
                               .toAmericanDate,
                           "Nationality",
@@ -172,23 +172,11 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           "Expiration Date",
                         ),
                         _detailCard(
-                          widget.licenseDetails.dateIssued
-                              .toDate()
-                              .toAmericanDate,
-                          "Issued Date",
-                        ),
-                        _detailCard(
-                          widget.licenseDetails.dateIssued
-                              .toDate()
-                              .toAmericanDate,
-                          "Issued Date",
-                        ),
-                        _detailCard(
-                          widget.licenseDetails.agenyCode,
+                          widget.licenseDetails.agencyCode,
                           "Agency code",
                         ),
                         _detailCard(
-                          widget.licenseDetails.licenseRestriction,
+                          widget.licenseDetails.dlcodes,
                           "DL Codes",
                         ),
                         _detailCard(

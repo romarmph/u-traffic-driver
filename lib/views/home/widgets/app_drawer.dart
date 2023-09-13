@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:u_traffic_driver/config/device/device_constraint.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
@@ -19,7 +17,7 @@ class AppDrawer extends StatelessWidget {
         backgroundColor: UColors.white,
         width: deviceWidth(context) * 0.9,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const AppDrawerHeader(),
             const LicenseExpantionListTile(),

@@ -41,12 +41,16 @@ dependencies:
   flutter:
     sdk: flutter
   google_fonts: ^4.0.4
-  path: ^1.8.2
+  path: ^1.8.3
   sign_in_button: ^3.0.0
   sliding_up_panel: ^2.0.0+1
   flutter_carousel_widget: ^2.1.0
   image_picker: ^1.0.4
   image_cropper: ^5.0.0
+  edge_detection: ^1.1.2
+  path_provider: ^2.1.1
+  permission_handler: ^11.0.0
+  http: ^1.1.0
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

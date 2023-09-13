@@ -17,18 +17,17 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
     with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late TabController _tabController;
+  String? imagePath;
 
   final _licenseNumberController = TextEditingController();
   final _expirationDateController = TextEditingController();
-  final _dateIssuedController = TextEditingController();
-  final _dateCreatedController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _middleNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _addressController = TextEditingController();
   final _nationalityController = TextEditingController();
   final _sexController = TextEditingController();
-  final _dateOfBirthController = TextEditingController();
+  final _birthdateController = TextEditingController();
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
   final _agenyCodeController = TextEditingController();
@@ -72,8 +71,9 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                   children: [
                     SingleChildScrollView(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const SizedBox(height: USpace.space12),
+                          const SizedBox(height: USpace.space16),
                           DashedRect(
                             color: UColors.gray300,
                             gap: 12,
@@ -87,19 +87,30 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                               ),
                               child: AspectRatio(
                                 aspectRatio: 3 / 2,
-                                child: Center(
-                                  child: Text(
-                                    'Take license image',
-                                    style: const UTextStyle().textlgfontbold,
-                                  ),
-                                ),
+                                child: imagePath != null
+                                    ? Image.file(File(imagePath!))
+                                    : Center(
+                                        child: Text(
+                                          'Take license image',
+                                          style: const UTextStyle()
+                                              .textlgfontsemibold
+                                              .copyWith(
+                                                color: UColors.gray500,
+                                              ),
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: USpace.space12),
+                          const SizedBox(height: USpace.space16),
                           ElevatedButton(
-                            onPressed: () {},
-                            child: const Text('Takle Image'),
+                            onPressed: () async {
+                              final path = await takeImage();
+                              setState(() {
+                                imagePath = path;
+                              });
+                            },
+                            child: const Text('Take Image'),
                           ),
                         ],
                       ),
@@ -112,7 +123,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                         addressController: _addressController,
                         nationalityController: _nationalityController,
                         sexController: _sexController,
-                        birthDateController: _dateOfBirthController,
+                        birthDateController: _birthdateController,
                         heightController: _heightController,
                         weightController: _weightController,
                       ),
@@ -121,7 +132,6 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                       child: LicenseDetailsForm(
                         licenseNumberController: _licenseNumberController,
                         expirationDateController: _expirationDateController,
-                        dateIssuedController: _dateIssuedController,
                         agenyCodeController: _agenyCodeController,
                         licenseRestrictionController:
                             _licenseRestrictionController,
@@ -139,6 +149,63 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
       ),
       bottomNavigationBar: _buildActionButtons(),
     );
+  }
+
+  void showError([String title = "Error", String text = ""]) {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      title: title,
+      text: text,
+    );
+  }
+
+  void showLoading() {
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.loading,
+      text: "Loading...",
+    );
+  }
+
+  void popLoading() {
+    Navigator.pop(context);
+  }
+
+  Future<String?> takeImage() async {
+    final path = await ScannerService.instance.getImageFromCamera();
+    if (path == null) {
+      showError("Error", "No image taken");
+      return null;
+    }
+    showLoading();
+    final LicenseDetails? details =
+        await LicenseParser.instance.parseLicense(path);
+    popLoading();
+
+    if (details == null) {
+      showError("Error", "No license details found");
+      return null;
+    }
+
+    _licenseNumberController.text = details.licenseNumber;
+    _expirationDateController.text = details.expirationDate.toDate().toString();
+    _firstNameController.text = details.firstName;
+    _middleNameController.text = details.middleName;
+    _lastNameController.text = details.lastName;
+    _addressController.text = details.address;
+    _birthdateController.text = details.birthdate.toDate().toString();
+    _nationalityController.text = details.nationality;
+    _sexController.text = details.sex;
+    _heightController.text = details.height.toString();
+    _weightController.text = details.weight.toString();
+    _agenyCodeController.text = details.agencyCode;
+    _licenseRestrictionController.text = details.dlcodes;
+    _conditionsController.text = details.conditions;
+    _bloodTypeController.text = details.bloodType;
+    _eyesColorController.text = details.eyesColor;
+
+    return path;
   }
 
   Widget _buildActionButtons() {
@@ -174,7 +241,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
           Expanded(
             child: ElevatedButton(
               onPressed: () {},
-              child: const Text("Next"),
+              child: const Text("Save"),
             ),
           ),
         ],
@@ -191,7 +258,6 @@ class LicenseDetailsForm extends StatelessWidget {
     super.key,
     required this.licenseNumberController,
     required this.expirationDateController,
-    required this.dateIssuedController,
     required this.agenyCodeController,
     required this.licenseRestrictionController,
     required this.conditionsController,
@@ -201,7 +267,6 @@ class LicenseDetailsForm extends StatelessWidget {
 
   final TextEditingController licenseNumberController;
   final TextEditingController expirationDateController;
-  final TextEditingController dateIssuedController;
   final TextEditingController agenyCodeController;
   final TextEditingController licenseRestrictionController;
   final TextEditingController conditionsController;
@@ -228,16 +293,6 @@ class LicenseDetailsForm extends StatelessWidget {
         LicenseFormField(
           controller: expirationDateController,
           labelText: 'Expiration Date',
-          validator: (value) {
-            return null;
-          },
-        ),
-        const SizedBox(
-          height: USpace.space12,
-        ),
-        LicenseFormField(
-          controller: dateIssuedController,
-          labelText: 'Date Issued',
           validator: (value) {
             return null;
           },
