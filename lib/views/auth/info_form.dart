@@ -1,14 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:quickalert/quickalert.dart';
-import 'package:u_traffic_driver/services/auth_service.dart';
-
-import '../../config/themes/colors.dart';
-import '../../config/themes/spacing.dart';
-import '../../config/themes/textstyles.dart';
+import 'package:u_traffic_driver/config/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/config/utils/exports/themes.dart';
+import 'package:u_traffic_driver/config/utils/exports/packages.dart';
+import 'package:u_traffic_driver/config/utils/exports/services.dart';
+import 'package:u_traffic_driver/config/utils/exports/models.dart';
 
 class CompleteInfoPage extends StatefulWidget {
   const CompleteInfoPage({super.key});
@@ -19,60 +13,60 @@ class CompleteInfoPage extends StatefulWidget {
 
 class _CompleteInfoPageState extends State<CompleteInfoPage>
     with WidgetsBindingObserver {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmpassController = TextEditingController();
-  final firstNameController = TextEditingController();
-  final middleNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final birthdateController = TextEditingController();
-  final idController = TextEditingController();
-  final phoneController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _middleNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _birthdateController = TextEditingController();
+  final _phoneController = TextEditingController();
 
-  var obscurePassword = true;
+  bool obscurePassword = true;
 
-  final _formkey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   final collectionPath = 'drivers';
 
-  void registerClient() async {
-    final authProvider = Provider.of<AuthService>(context, listen: false);
-
-    try {
-      EasyLoading.show(
-        status: 'Proccesing...',
+  void validateInput() {
+    if (_formKey.currentState!.validate()) {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.confirm,
+        text: null,
+        title: 'Are you sure?',
+        confirmBtnText: 'Yes',
+        cancelBtnText: 'No',
+        onConfirmBtnTap: () async {
+          Navigator.of(context).pop();
+          QuickAlert.show(
+            context: context,
+            type: QuickAlertType.loading,
+            text: 'Saving account...',
+          );
+          await saveProfile().then(
+            (value) => Navigator.of(context).pop(),
+          );
+        },
       );
-
-      String uid = authProvider.currentuser!.uid;
-      await FirebaseFirestore.instance.collection(collectionPath).doc(uid).set({
-        'firstName': firstNameController.text,
-        'middleName': middleNameController.text,
-        'lastName': lastNameController.text,
-        'birthDate': birthdateController.text,
-        'phonenumber': phoneController.text,
-        'email': authProvider.currentuser!.email,
-        // 'password': provider.currentDriver.password,
-      });
-
-      EasyLoading.showSuccess('User account has been registered.');
-    } on FirebaseFirestore catch (e) {}
-    // Navigator.push(context, MaterialPageRoute(builder: (context) => DLogin()));
+    }
   }
 
-  void validateInput() {
-    if (_formkey.currentState!.validate()) {
-      QuickAlert.show(
-          context: context,
-          type: QuickAlertType.confirm,
-          text: null,
-          title: 'Are you sure?',
-          confirmBtnText: 'YES',
-          cancelBtnText: 'NO',
-          onConfirmBtnTap: () {
-            Navigator.pop(context);
-            registerClient();
-          });
-    }
+  Future<void> saveProfile() async {
+    final authProvider = Provider.of<AuthService>(context, listen: false);
+
+    final Driver driver = Driver(
+      firstName: _firstNameController.text,
+      middleName: _middleNameController.text,
+      lastName: _lastNameController.text,
+      birthDate: Timestamp.fromDate(DateTime.parse(_birthdateController.text)),
+      phone: _phoneController.text,
+      email: authProvider.currentuser!.email!,
+      isProfileComplete: true,
+      password: authProvider.currentuser!.uid,
+    );
+
+    await FirebaseFirestore.instance
+        .collection(collectionPath)
+        .doc(authProvider.currentuser!.uid)
+        .set(driver.toJson());
   }
 
   @override
@@ -90,7 +84,6 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      // user is about to close the app: perform logout
       AuthService().signOut();
     }
   }
@@ -101,19 +94,19 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Form(
-          key: _formkey,
+          key: _formKey,
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  width: 700,
-                  height: 230,
+                  height: 200,
                   color: UColors.blue700,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const SizedBox(height: USpace.space135),
                       Text(
                         'Personal Information',
                         style: const UTextStyle().text4xlfontmedium.copyWith(
@@ -126,18 +119,20 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                               color: UColors.white,
                             ),
                       ),
+                      const SizedBox(height: USpace.space16),
                     ],
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: USpace.space12),
                       TextFormField(
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return '*Required. Please enter a First Name';
+                            return 'Please enter a First Name';
                           }
                           if (value.isEmpty ||
                               !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
@@ -145,7 +140,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                           }
                           return null;
                         },
-                        controller: firstNameController,
+                        controller: _firstNameController,
                         decoration: const InputDecoration(
                           labelText: 'First Name',
                         ),
@@ -154,7 +149,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       TextFormField(
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return '* Required. Please enter a Middle Name';
+                            return 'Please enter a Middle Name';
                           }
                           if (value.isEmpty ||
                               !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
@@ -162,7 +157,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                           }
                           return null;
                         },
-                        controller: middleNameController,
+                        controller: _middleNameController,
                         decoration: const InputDecoration(
                           labelText: 'Middle Name',
                         ),
@@ -171,7 +166,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       TextFormField(
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return '*Required. Please enter a Last Name';
+                            return 'Please enter a Last Name';
                           }
                           if (value.isEmpty ||
                               !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
@@ -179,7 +174,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                           }
                           return null;
                         },
-                        controller: lastNameController,
+                        controller: _lastNameController,
                         decoration: const InputDecoration(
                           labelText: 'Last Name',
                         ),
@@ -187,11 +182,17 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       const SizedBox(height: USpace.space12),
                       TextFormField(
                         canRequestFocus: false,
-                        controller: birthdateController,
+                        controller: _birthdateController,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.calendar_month),
                           labelText: 'Birthdate',
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a Birthdate';
+                          }
+                          return null;
+                        },
                         onTap: () async {
                           DateTime? pickeddate = await showDatePicker(
                               context: context,
@@ -201,7 +202,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
 
                           if (pickeddate != null) {
                             setState(() {
-                              birthdateController.text =
+                              _birthdateController.text =
                                   DateFormat('yyyy-MM-dd').format(pickeddate);
                             });
                           }
@@ -211,7 +212,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       TextFormField(
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return '*Required. Please enter a Phone Number';
+                            return 'Please enter a Phone Number';
                           }
                           if (value.isEmpty ||
                               !RegExp(r'^(?:[+0]9)?[0-9]{11}$')
@@ -220,7 +221,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                           }
                           return null;
                         },
-                        controller: phoneController,
+                        controller: _phoneController,
                         decoration: const InputDecoration(
                           labelText: 'Phone No.',
                         ),
@@ -228,29 +229,11 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       const SizedBox(height: USpace.space12),
                       ElevatedButton(
                         onPressed: validateInput,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          backgroundColor: UColors.blue700,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Create Account',
-                              style: const UTextStyle()
-                                  .textbasefontmedium
-                                  .copyWith(
-                                    color: UColors.white,
-                                  ),
-                            ),
-                          ],
+                        child: Text(
+                          'Complete Account',
+                          style: const UTextStyle().textbasefontmedium.copyWith(
+                                color: UColors.white,
+                              ),
                         ),
                       ),
                     ],

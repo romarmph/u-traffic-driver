@@ -36,6 +36,7 @@ class Driver {
       "email": email,
       "phone": phone,
       "password": password,
+      "isProfileComplete": isProfileComplete,
     };
   }
 
