@@ -1,6 +1,6 @@
-import 'package:u_traffic_driver/config/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/config/utils/exports/themes.dart';
-import 'package:u_traffic_driver/config/utils/exports/views.dart';
+import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/utils/exports/themes.dart';
+import 'package:u_traffic_driver/utils/exports/views.dart';
 
 class ViewWrapper extends StatefulWidget {
   const ViewWrapper({Key? key}) : super(key: key);

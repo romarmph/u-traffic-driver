@@ -9,7 +9,7 @@ import 'services/auth_service.dart';
 import 'firebase_options.dart';
 import 'views/wrapper.dart';
 
-import 'package:u_traffic_driver/config/utils/exports/themes.dart';
+import 'package:u_traffic_driver/utils/exports/themes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

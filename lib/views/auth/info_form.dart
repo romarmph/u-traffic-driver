@@ -1,8 +1,8 @@
-import 'package:u_traffic_driver/config/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/config/utils/exports/themes.dart';
-import 'package:u_traffic_driver/config/utils/exports/packages.dart';
-import 'package:u_traffic_driver/config/utils/exports/services.dart';
-import 'package:u_traffic_driver/config/utils/exports/models.dart';
+import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/utils/exports/themes.dart';
+import 'package:u_traffic_driver/utils/exports/packages.dart';
+import 'package:u_traffic_driver/utils/exports/services.dart';
+import 'package:u_traffic_driver/utils/exports/models.dart';
 
 class CompleteInfoPage extends StatefulWidget {
   const CompleteInfoPage({super.key});

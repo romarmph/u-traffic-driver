@@ -1,8 +1,8 @@
-import 'package:u_traffic_driver/config/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/config/utils/exports/packages.dart';
-import 'package:u_traffic_driver/config/utils/exports/services.dart';
-import 'package:u_traffic_driver/config/utils/exports/models.dart';
-import 'package:u_traffic_driver/config/utils/exports/views.dart';
+import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/utils/exports/packages.dart';
+import 'package:u_traffic_driver/utils/exports/services.dart';
+import 'package:u_traffic_driver/utils/exports/models.dart';
+import 'package:u_traffic_driver/utils/exports/views.dart';
 
 class WidgetWrapper extends StatelessWidget {
   const WidgetWrapper({super.key});

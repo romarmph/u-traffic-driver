@@ -1,13 +1,18 @@
-import 'package:u_traffic_driver/config/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/config/utils/exports/themes.dart';
-import 'package:u_traffic_driver/config/utils/exports/packages.dart';
-import 'package:u_traffic_driver/config/utils/exports/services.dart';
+import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/utils/exports/models.dart';
+import 'package:u_traffic_driver/utils/exports/themes.dart';
+import 'package:u_traffic_driver/utils/exports/views.dart';
+import 'package:u_traffic_driver/utils/exports/services.dart';
+import 'package:u_traffic_driver/utils/exports/packages.dart';
+import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthService>(context, listen: false);
+
     return Scaffold(
       backgroundColor: UColors.white,
       appBar: AppBar(
@@ -42,145 +47,47 @@ class HomePage extends StatelessWidget {
       ),
       body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.only(left: 12, right: 12),
-              height: 228,
-              width: 400,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                color: UColors.blue500,
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.asset(
-                                  'assets/images/image.png',
-                                  width: 97,
-                                  height: 97,
-                                ),
-                              ),
-                              const SizedBox(width: USpace.space12),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 45),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'MACARAEG',
-                                      style: const UTextStyle()
-                                          .textlgfontblack
-                                          .copyWith(
-                                            color: UColors.white,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                    ),
-                                    Text(
-                                      'ROMAR, CABANGON',
-                                      style: const UTextStyle()
-                                          .textsmfontsemibold
-                                          .copyWith(
-                                            color: UColors.white,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('licenses')
+                  .where('userID', isEqualTo: authProvider.currentuser!.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text('Something went wrong'),
+                  );
+                }
+
+                if (snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: LicenseAddButton(),
+                  );
+                }
+
+                final List<Widget> carouselItems = snapshot.data!.docs
+                    .map((e) => LicenseCard(
+                          licenseDetails: LicenseDetails.fromJson(
+                            e.data() as Map<String, dynamic>,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: USpace.space4,
-                              ),
-                              Text(
-                                'License Number',
-                                style: const UTextStyle()
-                                    .textsmfontnormal
-                                    .copyWith(
-                                      color: UColors.blue300,
-                                    ),
-                              ),
-                              Text(
-                                'A 14-55-012833',
-                                style: const UTextStyle()
-                                    .textxlfontbold
-                                    .copyWith(color: UColors.white, height: 1),
-                              ),
-                              const SizedBox(
-                                height: USpace.space8,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: USpace.space4,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Expiry Date',
-                                style: const UTextStyle()
-                                    .textsmfontnormal
-                                    .copyWith(
-                                        color: UColors.blue300, height: 1),
-                              ),
-                              Text(
-                                'Apr 10, 2024',
-                                style: const UTextStyle()
-                                    .textlgfontsemibold
-                                    .copyWith(color: UColors.white, height: 1),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 35,
-                      right: 20,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5),
-                        child: Image.asset(
-                          'assets/images/code.png',
-                          width: 40,
-                          height: 40,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 8,
-                      child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Tap here',
-                            style: const UTextStyle().textxsfontbold.copyWith(
-                                  color: UColors.white,
-                                ),
-                          )),
-                    ),
-                    ElevatedButton(
-                        onPressed: () {
-                          final provider =
-                              Provider.of<AuthService>(context, listen: false);
-                          provider.signOut();
-                        },
-                        child: Text('logout'))
-                  ],
-                ),
-              ),
+                        ))
+                    .toList();
+
+                return FlutterCarousel(
+                  items: carouselItems,
+                  options: CarouselOptions(
+                    aspectRatio: 3.2 / 2,
+                  ),
+                );
+              },
             ),
             const SizedBox(
               height: USpace.space14,
@@ -265,30 +172,30 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 24),
-                  child: Text(
-                    'Recent Violations',
-                    style: const UTextStyle().textsmfontmedium.copyWith(
-                          color: UColors.gray500,
-                        ),
-                  ),
-                ),
-                const SizedBox(
-                  width: USpace.space176,
-                ),
-                TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'View All',
-                      style: const UTextStyle().textsmfontmedium.copyWith(
-                            color: UColors.gray800,
-                          ),
-                    )),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     Padding(
+            //       padding: const EdgeInsets.only(left: 24),
+            //       child: Text(
+            //         'Recent Violations',
+            //         style: const UTextStyle().textsmfontmedium.copyWith(
+            //               color: UColors.gray500,
+            //             ),
+            //       ),
+            //     ),
+            //     const SizedBox(
+            //       width: USpace.space176,
+            //     ),
+            //     TextButton(
+            //         onPressed: () {},
+            //         child: Text(
+            //           'View All',
+            //           style: const UTextStyle().textsmfontmedium.copyWith(
+            //                 color: UColors.gray800,
+            //               ),
+            //         )),
+            //   ],
+            // ),
             Padding(
               padding: const EdgeInsets.only(
                 left: 8,
