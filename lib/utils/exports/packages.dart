@@ -17,3 +17,4 @@ export 'package:path_provider/path_provider.dart';
 export 'package:path/path.dart' show join;
 export 'package:permission_handler/permission_handler.dart';
 export 'package:http/http.dart';
+export 'package:syncfusion_flutter_barcodes/barcodes.dart';

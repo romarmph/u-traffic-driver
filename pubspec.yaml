@@ -51,6 +51,7 @@ dependencies:
   path_provider: ^2.1.1
   permission_handler: ^11.0.0
   http: ^1.1.0
+  syncfusion_flutter_barcodes: ^22.2.12
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

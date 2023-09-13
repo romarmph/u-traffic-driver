@@ -1,9 +1,10 @@
-import 'package:u_traffic_driver/config/device/device_constraint.dart';
+import 'package:u_traffic_driver/services/auth_service.dart';
 import 'package:u_traffic_driver/utils/exports/extensions.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
 import 'package:u_traffic_driver/utils/exports/views.dart';
+import 'package:u_traffic_driver/utils/exports/packages.dart';
 
 class LicenseDetailsView extends StatefulWidget {
   const LicenseDetailsView({
@@ -192,6 +193,50 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
           ],
         ),
       ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(
+          left: USpace.space12,
+          right: USpace.space12,
+          bottom: USpace.space12,
+        ),
+        child: ElevatedButton.icon(
+          onPressed: showQRCode,
+          label: const Text('Generate QR Code'),
+          icon: const Icon(Icons.qr_code),
+        ),
+      ),
+    );
+  }
+
+  void showQRCode() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final authProvider = Provider.of<AuthService>(context, listen: false);
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('License Detail QR'),
+              SizedBox(
+                height: 300,
+                width: 300,
+                child: SfBarcodeGenerator(
+                  value:
+                      "${widget.licenseDetails.licenseNumber}:${authProvider.currentuser!.uid}",
+                  symbology: QRCode(),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Close"),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
