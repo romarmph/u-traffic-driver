@@ -20,13 +20,6 @@ class HomePage extends StatelessWidget {
         elevation: 0,
         backgroundColor: UColors.white,
         foregroundColor: UColors.black,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.notes_sharp,
-            color: UColors.black,
-          ),
-          onPressed: () {},
-        ),
         title: Text(
           'U-Traffic',
           style: const UTextStyle().textlgfontbold.copyWith(
@@ -45,6 +38,7 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
+      drawer: const AppDrawer(),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -56,7 +56,7 @@ class WidgetWrapper extends StatelessWidget {
               return const CompleteInfoPage();
             }
 
-            return const HomePage();
+            return const ViewWrapper();
           },
         );
       },

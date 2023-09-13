@@ -14,3 +14,12 @@ void goToLicenseDetailView(
     ),
   );
 }
+
+
+void goAddNewLicenseView(BuildContext context) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => AddNewLicenseView(),
+    ),
+  );
+}
