@@ -5,6 +5,7 @@ export 'package:u_traffic_driver/views/auth/info_form.dart';
 export 'package:u_traffic_driver/views/home/home_page.dart';
 export 'package:u_traffic_driver/views/home/license_details_view.dart';
 export 'package:u_traffic_driver/views/home/add_new_license_view.dart';
+export 'package:u_traffic_driver/views/home/widgets/license_form_field.dart';
 export 'package:u_traffic_driver/views/home/widgets/license_card.dart';
 export 'package:u_traffic_driver/views/home/widgets/app_drawer.dart';
 export 'package:u_traffic_driver/views/home/widgets/app_drawer_header.dart';

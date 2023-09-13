@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:u_traffic_driver/config/device/device_constraint.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
@@ -23,7 +25,7 @@ class AppDrawer extends StatelessWidget {
             const LicenseExpantionListTile(),
             const Spacer(),
             TextButton.icon(
-              onPressed: () {},
+              onPressed: logout,
               icon: const Icon(Icons.logout),
               label: const Text(
                 'Logout',
@@ -34,6 +36,10 @@ class AppDrawer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void logout() {
+    AuthService().signOut();
   }
 }
 
