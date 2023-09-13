@@ -35,8 +35,7 @@ class AuthService {
     required String password,
   }) async {
     if (await getDriver(email) == null) {
-      print("Account is not a driver");
-      return null;
+      throw Exception("driver-account-not-found");
     }
 
     final auth.UserCredential userCredential =

@@ -1,3 +1,6 @@
+import 'package:u_traffic_driver/model/violation_model.dart';
+import 'package:u_traffic_driver/provider/license_provider.dart';
+import 'package:u_traffic_driver/provider/violations_provider.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/exports/services.dart';
@@ -9,7 +12,7 @@ class WidgetWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
+    final authService = Provider.of<AuthService>(context, listen: false);
 
     return StreamBuilder<User?>(
       stream: authService.user,
@@ -56,10 +59,54 @@ class WidgetWrapper extends StatelessWidget {
               return const CompleteInfoPage();
             }
 
-            return const HomePage();
+            load(context);
+
+            return const ViewWrapper();
           },
         );
       },
     );
+  }
+
+  void load(BuildContext context) async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final violationProvider = Provider.of<ViolationProvider>(
+      context,
+      listen: false,
+    );
+
+    final licenseProvider = Provider.of<LicenseProvider>(
+      context,
+      listen: false,
+    );
+
+    final List<Violation> violationsList =
+        await FirebaseFirestore.instance.collection('violations').get().then(
+              (value) => value.docs
+                  .map(
+                    (e) => Violation.fromJson(
+                      e.data(),
+                      e.id,
+                    ),
+                  )
+                  .toList(),
+            );
+
+    final List<LicenseDetails> licenseList = await FirebaseFirestore.instance
+        .collection('licenses')
+        .where('userID', isEqualTo: authService.currentuser!.uid)
+        .get()
+        .then(
+          (value) => value.docs
+              .map(
+                (e) => LicenseDetails.fromJson(
+                  e.data(),
+                ),
+              )
+              .toList(),
+        );
+
+    licenseProvider.setLicenseList(licenseList);
+    violationProvider.setViolations(violationsList);
   }
 }
