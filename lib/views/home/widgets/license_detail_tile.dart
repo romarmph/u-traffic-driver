@@ -1,8 +1,8 @@
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
 
-class LicenseDetailTile extends StatelessWidget {
-  const LicenseDetailTile({
+class DetailTile extends StatelessWidget {
+  const DetailTile({
     super.key,
     required this.detail,
     required this.label,

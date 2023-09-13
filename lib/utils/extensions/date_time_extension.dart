@@ -6,4 +6,8 @@ extension DateTimeExtension on DateTime {
   String get toISO8601Date => DateFormat('yyyy/MM/dd').format(this);
 
   String get formatTime => DateFormat('hh:mm a').format(this);
+
+  String get dueDate {
+    return add(const Duration(days: 7)).toISO8601Date;
+  }
 }

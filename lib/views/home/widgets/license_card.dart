@@ -45,13 +45,13 @@ class LicenseCard extends StatelessWidget {
                   firstName:
                       '${licenseDetails.firstName} ${licenseDetails.middleName} ',
                 ),
-                LicenseDetailTile(
+                DetailTile(
                   detail: licenseDetails.licenseNumber,
                   label: 'License Number',
                 ),
                 Expanded(
                   flex: 3,
-                  child: LicenseDetailTile(
+                  child: DetailTile(
                     detail:
                         licenseDetails.expirationDate.toDate().toISO8601Date,
                     label: 'Expiration Date',

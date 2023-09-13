@@ -42,7 +42,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: LicenseDetailTile(
+        child: DetailTile(
           detail: detail,
           label: label,
           detailStyle: const UTextStyle().textxlfontsemibold.copyWith(

@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:u_traffic_driver/provider/driver_provider.dart';
+import 'package:u_traffic_driver/provider/license_provider.dart';
+import 'package:u_traffic_driver/provider/violations_provider.dart';
 import 'services/auth_service.dart';
 import 'firebase_options.dart';
 import 'views/wrapper.dart';
@@ -31,6 +33,12 @@ class UTrafficDriver extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => DriverProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LicenseProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ViolationProvider(),
         ),
       ],
       child: MaterialApp(

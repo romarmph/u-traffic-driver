@@ -10,4 +10,13 @@ extension StringExtension on String {
       return null;
     }
   }
+
+  String get formatDate {
+    try {
+      return DateFormat('MMMM dd, yyyy')
+          .format(DateTime.parse(split('/').join('-')));
+    } catch (e) {
+      return '';
+    }
+  }
 }
