@@ -1,10 +1,10 @@
-import 'package:u_traffic_driver/config/device/device_constraint.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
 import 'package:u_traffic_driver/utils/exports/views.dart';
 import 'package:u_traffic_driver/utils/exports/services.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
+import 'package:u_traffic_driver/utils/exports/extensions.dart';
 
 class AddNewLicenseView extends StatefulWidget {
   const AddNewLicenseView({super.key});
@@ -30,8 +30,8 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
   final _birthdateController = TextEditingController();
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
-  final _agenyCodeController = TextEditingController();
-  final _licenseRestrictionController = TextEditingController();
+  final _agencyCodeController = TextEditingController();
+  final _dlcodesController = TextEditingController();
   final _conditionsController = TextEditingController();
   final _bloodTypeController = TextEditingController();
   final _eyesColorController = TextEditingController();
@@ -132,9 +132,8 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                       child: LicenseDetailsForm(
                         licenseNumberController: _licenseNumberController,
                         expirationDateController: _expirationDateController,
-                        agenyCodeController: _agenyCodeController,
-                        licenseRestrictionController:
-                            _licenseRestrictionController,
+                        agenyCodeController: _agencyCodeController,
+                        licenseRestrictionController: _dlcodesController,
                         conditionsController: _conditionsController,
                         bloodTypeController: _bloodTypeController,
                         eyesColorController: _eyesColorController,
@@ -199,13 +198,46 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
     _sexController.text = details.sex;
     _heightController.text = details.height.toString();
     _weightController.text = details.weight.toString();
-    _agenyCodeController.text = details.agencyCode;
-    _licenseRestrictionController.text = details.dlcodes;
+    _agencyCodeController.text = details.agencyCode;
+    _dlcodesController.text = details.dlcodes;
     _conditionsController.text = details.conditions;
     _bloodTypeController.text = details.bloodType;
     _eyesColorController.text = details.eyesColor;
 
     return path;
+  }
+
+  Future<void> saveLicense() async {
+    final licenseDetails = LicenseDetails(
+      licenseNumber: _licenseNumberController.text,
+      expirationDate: _expirationDateController.text.getTimeStamp!,
+      firstName: _firstNameController.text,
+      middleName: _middleNameController.text,
+      lastName: _lastNameController.text,
+      address: _addressController.text,
+      nationality: _nationalityController.text,
+      sex: _sexController.text,
+      birthdate: _birthdateController.text.getTimeStamp!,
+      height: double.parse(_heightController.text),
+      weight: double.parse(_weightController.text),
+      agencyCode: _agencyCodeController.text,
+      dlcodes: _dlcodesController.text,
+      conditions: _conditionsController.text,
+      bloodType: _bloodTypeController.text,
+      eyesColor: _eyesColorController.text,
+      userID: AuthService().currentuser!.uid,
+      dateCreated: Timestamp.now(),
+    );
+
+    showLoading();
+    await FirebaseFirestore.instance
+        .collection('licenses')
+        .add(
+          licenseDetails.toJson(),
+        )
+        .then(
+          (value) => popLoading(),
+        );
   }
 
   Widget _buildActionButtons() {
@@ -240,7 +272,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
           const SizedBox(width: USpace.space16),
           Expanded(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async => await saveLicense(),
               child: const Text("Save"),
             ),
           ),

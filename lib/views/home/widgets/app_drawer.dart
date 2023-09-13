@@ -92,15 +92,18 @@ class LicenseExpantionListTile extends StatelessWidget {
               side: BorderSide.none,
             ),
             clipBehavior: Clip.antiAlias,
-            backgroundColor: UColors.blue200,
+            backgroundColor: UColors.blue100,
             children: [
               ...licenseList,
-              ListTile(
-                leading: const Icon(Icons.add),
-                title: const Text("Add License"),
-                onTap: () {
-                  addNewLicens(licenseList.length, context);
-                },
+              Container(
+                color: UColors.blue200,
+                child: ListTile(
+                  leading: const Icon(Icons.add),
+                  title: const Text("Add License"),
+                  onTap: () {
+                    addNewLicens(licenseList.length, context);
+                  },
+                ),
               ),
             ],
           );
@@ -113,10 +116,13 @@ class LicenseExpantionListTile extends StatelessWidget {
     if (licenseCount == 3) {
       QuickAlert.show(
         context: context,
-        type: QuickAlertType.error,
+        type: QuickAlertType.info,
+        title: "Max License Reached",
         text: "You can only add 3 licenses",
         onCancelBtnTap: () => Navigator.pop(context),
       );
+
+      return;
     }
 
     goAddNewLicenseView(context);
