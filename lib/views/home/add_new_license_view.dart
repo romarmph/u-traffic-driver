@@ -21,7 +21,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
 
   final _licenseNumberController = TextEditingController();
   final _expirationDateController = TextEditingController();
-  final _firstNameController = TextEditingController();
+  final _driverNameController = TextEditingController();
   final _middleNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _addressController = TextEditingController();
@@ -117,7 +117,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                     ),
                     SingleChildScrollView(
                       child: PersonalDetailsForm(
-                        firstNameController: _firstNameController,
+                        firstNameController: _driverNameController,
                         middleNameController: _middleNameController,
                         lastNameController: _lastNameController,
                         addressController: _addressController,
@@ -189,9 +189,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
 
     _licenseNumberController.text = details.licenseNumber;
     _expirationDateController.text = details.expirationDate.toDate().toString();
-    _firstNameController.text = details.firstName;
-    _middleNameController.text = details.middleName;
-    _lastNameController.text = details.lastName;
+    _driverNameController.text = details.driverName;
     _addressController.text = details.address;
     _birthdateController.text = details.birthdate.toDate().toString();
     _nationalityController.text = details.nationality;
@@ -211,9 +209,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
     final licenseDetails = LicenseDetails(
       licenseNumber: _licenseNumberController.text,
       expirationDate: _expirationDateController.text.getTimeStamp!,
-      firstName: _firstNameController.text,
-      middleName: _middleNameController.text,
-      lastName: _lastNameController.text,
+      driverName: _driverNameController.text,
       address: _addressController.text,
       nationality: _nationalityController.text,
       sex: _sexController.text,

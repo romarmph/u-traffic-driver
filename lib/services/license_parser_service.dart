@@ -53,9 +53,7 @@ class LicenseParser {
         LicenseDetails mockup = LicenseDetails(
           licenseNumber: "",
           expirationDate: Timestamp.now(),
-          firstName: "",
-          middleName: "",
-          lastName: "",
+          driverName: "",
           address: "",
           nationality: "",
           sex: "",

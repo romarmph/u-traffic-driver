@@ -41,9 +41,8 @@ class LicenseCard extends StatelessWidget {
                       ),
                 ),
                 DriverNameTile(
-                  lastName: licenseDetails.lastName,
-                  firstName:
-                      '${licenseDetails.firstName} ${licenseDetails.middleName} ',
+                  lastName: licenseDetails.driverName.split(',')[0],
+                  firstName: '${licenseDetails.driverName.split(',')[1]} ',
                 ),
                 DetailTile(
                   detail: licenseDetails.licenseNumber,

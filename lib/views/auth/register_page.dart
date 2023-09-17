@@ -1,17 +1,19 @@
+import 'package:u_traffic_driver/model/driver_model.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/exports/services.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
+import 'package:u_traffic_driver/utils/exports/views.dart';
 import 'package:u_traffic_driver/views/auth/register_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,21 +29,37 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
       final authService = Provider.of<AuthService>(context, listen: false);
       try {
-        await authService.signInWithEmailAndPassword(
+        final user = await authService.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
+        await FirebaseFirestore.instance
+            .collection('drivers')
+            .doc(user!.uid)
+            .set(
+              Driver(
+                firstName: "",
+                lastName: "",
+                email: email,
+                phone: "",
+                password: password,
+                isProfileComplete: false,
+                middleName: "",
+                birthDate: Timestamp.now(),
+                suffix: "",
+              ).toJson(),
+            );
       } on FirebaseException catch (e) {
-        if (e.code == "wrong-password") {
+        if (e.code == "email-already-in-use") {
           setState(() {
-            _passwordError = "Incorrect password";
+            _emailError = "Email already in use";
             _formKey.currentState!.validate();
           });
         }
-      } on Exception catch (e) {
-        if (e.toString().contains("driver-account-not-found")) {
+
+        if (e.code == "weak-password") {
           setState(() {
-            _emailError = "Driver account not found";
+            _passwordError = "Password is too weak";
             _formKey.currentState!.validate();
           });
         }
@@ -74,13 +92,13 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const SizedBox(height: USpace.space80),
                     Text(
-                      'Sign in to your Account',
+                      'Create Account',
                       style: const UTextStyle().text4xlfontmedium.copyWith(
                             color: UColors.white,
                           ),
                     ),
                     Text(
-                      'Login to continue',
+                      'Register to continue',
                       style: const UTextStyle().textbasefontnormal.copyWith(
                             color: UColors.white,
                           ),
@@ -165,24 +183,6 @@ class _LoginPageState extends State<LoginPage> {
                         return _passwordError;
                       },
                     ),
-                    // const SizedBox(height: USpace.space12),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.end,
-                    //   children: [
-                    //     TextButton(
-                    //       onPressed: () {
-                    //         // Implement your "Forgot Password" functionality
-                    //       },
-                    //       child: Text(
-                    //         'Forgot Password?',
-                    //         style:
-                    //             const UTextStyle().textbasefontmedium.copyWith(
-                    //                   color: UColors.blue700,
-                    //                 ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                     const SizedBox(height: USpace.space12),
                     ElevatedButton(
                         onPressed: () async {
@@ -199,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                                 color: UColors.white,
                               )
                             : Text(
-                                'Login',
+                                'Create Account',
                                 style: const UTextStyle()
                                     .textbasefontmedium
                                     .copyWith(
@@ -240,21 +240,21 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
+                            builder: (context) => const LoginPage(),
                           ),
                         );
                       },
                       child: Row(
                         children: [
                           Text(
-                            "Don't have an account? ",
+                            "Already have an account? ",
                             style:
                                 const UTextStyle().textbasefontmedium.copyWith(
                                       color: UColors.gray600,
                                     ),
                           ),
                           Text(
-                            'Register',
+                            'Login',
                             style:
                                 const UTextStyle().textbasefontmedium.copyWith(
                                       color: UColors.blue700,

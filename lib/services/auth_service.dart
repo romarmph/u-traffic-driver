@@ -47,7 +47,7 @@ class AuthService {
     return userCredential.user;
   }
 
-  Future<User?> createUserWithEmailAndPassword({
+  Future<User?>   createUserWithEmailAndPassword({
     required String email,
     required String password,
   }) async {

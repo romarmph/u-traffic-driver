@@ -79,7 +79,7 @@ class LicenseExpantionListTile extends StatelessWidget {
             );
             return ListTile(
               title: Text(licenseDetails.licenseNumber),
-              subtitle: Text(licenseDetails.firstName),
+              subtitle: Text(licenseDetails.driverName),
               onTap: () => goToLicenseDetailView(licenseDetails, context),
             );
           }).toList();

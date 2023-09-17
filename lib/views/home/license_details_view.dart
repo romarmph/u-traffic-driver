@@ -91,16 +91,8 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           height: USpace.space12,
                         ),
                         _detailCard(
-                          widget.licenseDetails.lastName,
-                          "Last Name",
-                        ),
-                        _detailCard(
-                          widget.licenseDetails.firstName,
-                          "First Name",
-                        ),
-                        _detailCard(
-                          widget.licenseDetails.middleName,
-                          "Middle Name",
+                          widget.licenseDetails.driverName,
+                          "Driver Name",
                         ),
                         _detailCard(
                           widget.licenseDetails.birthdate
