@@ -38,15 +38,12 @@ class _RegisterPageState extends State<RegisterPage> {
             .doc(user!.uid)
             .set(
               Driver(
-                firstName: "",
-                lastName: "",
+                driverName: "",
+                address: "",
                 email: email,
                 phone: "",
-                password: password,
                 isProfileComplete: false,
-                middleName: "",
                 birthDate: Timestamp.now(),
-                suffix: "",
               ).toJson(),
             );
       } on FirebaseException catch (e) {

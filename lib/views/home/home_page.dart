@@ -1,5 +1,6 @@
 import 'package:u_traffic_driver/config/enums/ticket_status.dart';
 import 'package:u_traffic_driver/model/ticket_model.dart';
+import 'package:u_traffic_driver/provider/driver_provider.dart';
 import 'package:u_traffic_driver/provider/license_provider.dart';
 import 'package:u_traffic_driver/utils/exports/extensions.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
@@ -12,8 +13,20 @@ import 'package:u_traffic_driver/utils/navigator.dart';
 import 'package:u_traffic_driver/views/home/widgets/empty_unpaid_violations.dart';
 import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    final driver = Provider.of<DriverProvider>(context, listen: false);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +86,13 @@ class HomePage extends StatelessWidget {
                   );
                 }
 
-                final List<Widget> carouselItems = snapshot.data!.docs
-                    .map((e) => LicenseCard(
-                          licenseDetails: LicenseDetails.fromJson(
-                            e.data() as Map<String, dynamic>,
-                          ),
-                        ))
-                    .toList();
+                final List<Widget> carouselItems = snapshot.data!.docs.map((e) {
+                  return LicenseCard(
+                    licenseDetails: LicenseDetails.fromJson(
+                      e.data() as Map<String, dynamic>,
+                    ),
+                  );
+                }).toList();
 
                 return FlutterCarousel(
                   items: carouselItems,

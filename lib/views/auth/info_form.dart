@@ -13,7 +13,7 @@ class CompleteInfoPage extends StatefulWidget {
 
 class _CompleteInfoPageState extends State<CompleteInfoPage>
     with WidgetsBindingObserver {
-  final _firstNameController = TextEditingController();
+  final _driverNameController = TextEditingController();
   final _middleNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _birthdateController = TextEditingController();
@@ -53,14 +53,13 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
     final authProvider = Provider.of<AuthService>(context, listen: false);
 
     final Driver driver = Driver(
-      firstName: _firstNameController.text,
-      middleName: _middleNameController.text,
-      lastName: _lastNameController.text,
+      driverName: _driverNameController.text,
+      // TODO: Add address controller
+      address: "",
       birthDate: Timestamp.fromDate(DateTime.parse(_birthdateController.text)),
       phone: _phoneController.text,
       email: authProvider.currentuser!.email!,
       isProfileComplete: true,
-      password: authProvider.currentuser!.uid,
     );
 
     await FirebaseFirestore.instance
@@ -140,7 +139,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                           }
                           return null;
                         },
-                        controller: _firstNameController,
+                        controller: _driverNameController,
                         decoration: const InputDecoration(
                           labelText: 'First Name',
                         ),

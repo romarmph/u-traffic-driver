@@ -190,9 +190,6 @@ class _LoginPageState extends State<LoginPage> {
                             isLoading = true;
                           });
                           await loginBtnPressed();
-                          setState(() {
-                            isLoading = false;
-                          });
                         },
                         child: isLoading
                             ? const CircularProgressIndicator(

@@ -1,3 +1,4 @@
+import 'package:u_traffic_driver/provider/driver_provider.dart';
 import 'package:u_traffic_driver/services/auth_service.dart';
 import 'package:u_traffic_driver/utils/exports/extensions.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
@@ -204,7 +205,11 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
     showDialog(
       context: context,
       builder: (context) {
-        final authProvider = Provider.of<AuthService>(context, listen: false);
+        final driverProvider =
+            Provider.of<DriverProvider>(context, listen: false);
+
+        print(driverProvider.currentDriver);
+
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -214,8 +219,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                 height: 300,
                 width: 300,
                 child: SfBarcodeGenerator(
-                  value:
-                      "${widget.licenseDetails.licenseNumber}:${authProvider.currentuser!.uid}",
+                  value: driverProvider.currentDriver.toJson().toString(),
                   symbology: QRCode(),
                 ),
               ),
