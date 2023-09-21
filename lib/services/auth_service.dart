@@ -25,7 +25,6 @@ class AuthService {
 
     Driver driver = Driver.fromJson(
       result.docs.first.data(),
-      result.docs.first.id,
     );
 
     return driver;
@@ -48,7 +47,7 @@ class AuthService {
     return userCredential.user;
   }
 
-  Future<User?> createUserWithEmailAndPassword({
+  Future<User?>   createUserWithEmailAndPassword({
     required String email,
     required String password,
   }) async {

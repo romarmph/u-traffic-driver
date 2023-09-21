@@ -6,7 +6,7 @@ class DriverProvider extends ChangeNotifier {
 
   Driver get currentDriver => _currentdriver!;
 
-  void setDriver(Driver driver) {
+  void updateDriver(Driver driver) {
     _currentdriver = driver;
     notifyListeners();
   }
