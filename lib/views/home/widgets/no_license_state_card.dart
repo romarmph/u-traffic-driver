@@ -1,10 +1,6 @@
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/views.dart';
-import 'package:u_traffic_driver/utils/exports/extensions.dart';
-import 'package:u_traffic_driver/utils/navigator.dart';
 
 class LicenseAddButton extends StatelessWidget {
   const LicenseAddButton({
@@ -16,7 +12,9 @@ class LicenseAddButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(USpace.space12),
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(context, '/new-license');
+        },
         child: DashedRect(
           color: UColors.gray300,
           gap: 12,

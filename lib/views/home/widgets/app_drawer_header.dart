@@ -1,5 +1,5 @@
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
 
 class AppDrawerHeader extends StatelessWidget {
   const AppDrawerHeader({
@@ -8,6 +8,10 @@ class AppDrawerHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final driverProvider = Provider.of<DriverProvider>(context);
+
+    final currentDriver = driverProvider.currentDriver;
+
     return Container(
       height: 120,
       decoration: const BoxDecoration(
@@ -29,13 +33,13 @@ class AppDrawerHeader extends StatelessWidget {
               Expanded(
                 child: ListTile(
                   title: Text(
-                    'John Doe',
+                    "${currentDriver.firstName} ${currentDriver.lastName}",
                     style: const UTextStyle().textlgfontbold.copyWith(
                           color: UColors.white,
                         ),
                   ),
                   subtitle: Text(
-                    'driver2@gmail.com',
+                    currentDriver.email,
                     style: const UTextStyle().textsmfontnormal.copyWith(
                           color: UColors.white,
                         ),

@@ -8,6 +8,7 @@ import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/provider/driver_provider.dart';
 import 'package:u_traffic_driver/provider/license_provider.dart';
 import 'package:u_traffic_driver/provider/violations_provider.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'services/auth_service.dart';
 import 'firebase_options.dart';
 import 'views/wrapper.dart';
@@ -76,6 +77,7 @@ class UTrafficDriver extends StatelessWidget {
         initialRoute: "/",
         routes: {
           '/': (context) => const WidgetWrapper(),
+          '/new-license': (context) => const AddNewLicenseView(),
         },
       ),
     );

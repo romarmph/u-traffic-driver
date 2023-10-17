@@ -14,6 +14,10 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Drawer(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+          side: BorderSide.none,
+        ),
         backgroundColor: UColors.white,
         width: deviceWidth(context) * 0.9,
         child: Column(
@@ -22,6 +26,11 @@ class AppDrawer extends StatelessWidget {
             const AppDrawerHeader(),
             const LicenseExpantionListTile(),
             const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Account Settings'),
+              onTap: () => print("settings"),
+            ),
             TextButton.icon(
               onPressed: logout,
               icon: const Icon(Icons.logout),

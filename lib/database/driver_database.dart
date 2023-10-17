@@ -8,6 +8,16 @@ class DriverDatabase {
 
   static DriverDatabase get instance => _instance;
 
+  Future<Driver> getCurrentDriver(String uid) async {
+    final db = FirebaseFirestore.instance;
+    try {
+      final doc = await db.collection('drivers').doc(uid).get();
+      return Driver.fromJson(doc.data()!);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> addDriver(Driver driver, String uid) async {
     final db = FirebaseFirestore.instance;
     await db.collection('drivers').doc(uid).set(driver.toJson());

@@ -6,4 +6,6 @@ export 'package:u_traffic_driver/utils/exports/services.dart';
 export 'package:u_traffic_driver/utils/exports/themes.dart';
 export 'package:u_traffic_driver/utils/exports/views.dart';
 
+export 'package:u_traffic_driver/provider/driver_provider.dart';
+
 export 'package:u_traffic_driver/database/driver_database.dart';

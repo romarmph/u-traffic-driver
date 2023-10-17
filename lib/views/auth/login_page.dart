@@ -1,3 +1,4 @@
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/exports/services.dart';
@@ -26,11 +27,16 @@ class _LoginPageState extends State<LoginPage> {
       final email = _emailController.text;
       final password = _passwordController.text;
       final authService = Provider.of<AuthService>(context, listen: false);
+      final driverProvider =
+          Provider.of<DriverProvider>(context, listen: false);
       try {
         await authService.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
+        await DriverDatabase.instance
+            .getCurrentDriver(authService.currentuser!.uid)
+            .then((value) => driverProvider.updateDriver(value));
       } on FirebaseException catch (e) {
         if (e.code == "wrong-password") {
           setState(() {

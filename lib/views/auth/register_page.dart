@@ -28,17 +28,19 @@ class _RegisterPageState extends State<RegisterPage> {
           email: email,
           password: password,
         );
-        await DriverDatabase.instance.addDriver(
-            Driver(
-              firstName: "",
-              lastName: "",
-              email: email,
-              phone: "",
-              isProfileComplete: false,
-              middleName: "",
-              birthDate: Timestamp.now(),
-            ),
-            user!.uid);
+        final driver = Driver(
+          firstName: "",
+          lastName: "",
+          email: email,
+          phone: "",
+          isProfileComplete: false,
+          middleName: "",
+          birthDate: Timestamp.now(),
+        );
+
+        await DriverDatabase.instance.addDriver(driver, user!.uid).then(
+            (value) => Provider.of<DriverProvider>(context, listen: false)
+                .updateDriver(driver));
       } on FirebaseException catch (e) {
         if (e.code == "email-already-in-use") {
           setState(() {

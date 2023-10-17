@@ -1,4 +1,3 @@
-import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
@@ -58,6 +57,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
     }
 
     final authProvider = Provider.of<AuthService>(context, listen: false);
+    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
     final Driver driver = Driver(
       firstName: _firstNameController.text,
@@ -72,7 +72,8 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
     await FirebaseFirestore.instance
         .collection(collectionPath)
         .doc(authProvider.currentuser!.uid)
-        .set(driver.toJson());
+        .set(driver.toJson())
+        .then((value) => driverProvider.updateDriver(driver));
   }
 
   @override

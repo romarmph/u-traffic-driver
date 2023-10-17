@@ -31,8 +31,8 @@ class ViewWrapperState extends State<ViewWrapper> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      isProfileComplete().then((value) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await isProfileComplete().then((value) {
         if (!value) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
