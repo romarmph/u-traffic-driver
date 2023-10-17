@@ -29,16 +29,13 @@ class WidgetWrapper extends StatelessWidget {
           return const LoginPage();
         }
 
-        return FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance
-              .collection('drivers')
-              .doc(authService.currentuser!.uid)
-              .get(),
+        return FutureBuilder<bool>(
+          future: load(context),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Scaffold(
                 body: Center(
-                  child: Text("Error"),
+                  child: Text("Error loading data, please try again later"),
                 ),
               );
             }
@@ -51,16 +48,6 @@ class WidgetWrapper extends StatelessWidget {
               );
             }
 
-            Driver driver = Driver.fromJson(
-              snapshot.data!.data() as Map<String, dynamic>,
-            );
-
-            if (driver.isProfileComplete == false) {
-              return const CompleteInfoPage();
-            }
-
-            load(context);
-
             return const ViewWrapper();
           },
         );
@@ -68,8 +55,12 @@ class WidgetWrapper extends StatelessWidget {
     );
   }
 
-  void load(BuildContext context) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
+  Future<bool> load(BuildContext context) async {
+    final authService = Provider.of<AuthService>(
+      context,
+      listen: false,
+    );
+
     final violationProvider = Provider.of<ViolationProvider>(
       context,
       listen: false,
@@ -80,33 +71,38 @@ class WidgetWrapper extends StatelessWidget {
       listen: false,
     );
 
-    final List<Violation> violationsList =
-        await FirebaseFirestore.instance.collection('violations').get().then(
-              (value) => value.docs
-                  .map(
-                    (e) => Violation.fromJson(
-                      e.data(),
-                      e.id,
-                    ),
-                  )
-                  .toList(),
-            );
+    try {
+      final List<Violation> violationsList =
+          await FirebaseFirestore.instance.collection('violations').get().then(
+                (value) => value.docs
+                    .map(
+                      (e) => Violation.fromJson(
+                        e.data(),
+                        e.id,
+                      ),
+                    )
+                    .toList(),
+              );
 
-    final List<LicenseDetails> licenseList = await FirebaseFirestore.instance
-        .collection('licenses')
-        .where('userID', isEqualTo: authService.currentuser!.uid)
-        .get()
-        .then(
-          (value) => value.docs
-              .map(
-                (e) => LicenseDetails.fromJson(
-                  e.data(),
-                ),
-              )
-              .toList(),
-        );
+      final List<LicenseDetails> licenseList = await FirebaseFirestore.instance
+          .collection('licenses')
+          .where('userID', isEqualTo: authService.currentuser!.uid)
+          .get()
+          .then(
+            (value) => value.docs
+                .map(
+                  (e) => LicenseDetails.fromJson(
+                    e.data(),
+                  ),
+                )
+                .toList(),
+          );
 
-    licenseProvider.setLicenseList(licenseList);
-    violationProvider.setViolations(violationsList);
+      licenseProvider.setLicenseList(licenseList);
+      violationProvider.setViolations(violationsList);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

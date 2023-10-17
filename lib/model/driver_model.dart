@@ -10,7 +10,6 @@ class Driver {
   String email;
   String phone;
   bool isProfileComplete = false;
-  String password;
 
   Driver({
     this.id,
@@ -22,7 +21,6 @@ class Driver {
     required this.email,
     required this.phone,
     required this.isProfileComplete,
-    required this.password,
   });
 
   Map<String, dynamic> toJson() {
@@ -35,7 +33,6 @@ class Driver {
       "birthDate": birthDate,
       "email": email,
       "phone": phone,
-      "password": password,
       "isProfileComplete": isProfileComplete,
     };
   }
@@ -51,7 +48,6 @@ class Driver {
       birthDate: json["birthDate"],
       email: json["email"],
       phone: json["phone"] ?? "",
-      password: json["password"] ?? "",
       isProfileComplete: json["isProfileComplete"],
     );
   }
@@ -59,6 +55,6 @@ class Driver {
   // Create toString method
   @override
   String toString() {
-    return "Driver(id: $id, suffix: $suffix, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, password: $password)";
+    return "Driver(id: $id, suffix: $suffix, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, password: )";
   }
 }

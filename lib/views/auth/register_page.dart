@@ -1,10 +1,6 @@
 import 'package:u_traffic_driver/model/driver_model.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/views.dart';
-import 'package:u_traffic_driver/views/auth/register_page.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -33,22 +29,18 @@ class _RegisterPageState extends State<RegisterPage> {
           email: email,
           password: password,
         );
-        await FirebaseFirestore.instance
-            .collection('drivers')
-            .doc(user!.uid)
-            .set(
-              Driver(
-                firstName: "",
-                lastName: "",
-                email: email,
-                phone: "",
-                password: password,
-                isProfileComplete: false,
-                middleName: "",
-                birthDate: Timestamp.now(),
-                suffix: "",
-              ).toJson(),
-            );
+        await DriverDatabase.instance.addDriver(
+            Driver(
+              firstName: "",
+              lastName: "",
+              email: email,
+              phone: "",
+              isProfileComplete: false,
+              middleName: "",
+              birthDate: Timestamp.now(),
+              suffix: "",
+            ),
+            user!.uid);
       } on FirebaseException catch (e) {
         if (e.code == "email-already-in-use") {
           setState(() {
@@ -113,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Email or Phone number',
+                      'Email',
                       style: const UTextStyle().textsmfontmedium.copyWith(
                             color: UColors.gray900,
                           ),
@@ -206,35 +198,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                       color: UColors.white,
                                     ),
                               )),
-                    // const SizedBox(height: USpace.space24),
-                    // const Text(
-                    //   'Or Login With',
-                    //   textAlign: TextAlign.center,
-                    // ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    //     Container(
-                    //       width: 120,
-                    //       padding: const EdgeInsets.symmetric(vertical: 20),
-                    //       child: SignInButton(
-                    //         Buttons.google,
-                    //         onPressed: () {},
-                    //         text: 'Google',
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: USpace.space8),
-                    //     Container(
-                    //       width: 120,
-                    //       padding: const EdgeInsets.symmetric(vertical: 20),
-                    //       child: SignInButton(
-                    //         Buttons.facebook,
-                    //         onPressed: () {},
-                    //         text: 'Facebook',
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                     const SizedBox(width: USpace.space8),
                     TextButton(
                       onPressed: () {

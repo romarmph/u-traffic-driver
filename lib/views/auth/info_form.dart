@@ -60,7 +60,6 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
       phone: _phoneController.text,
       email: authProvider.currentuser!.email!,
       isProfileComplete: true,
-      password: authProvider.currentuser!.uid,
     );
 
     await FirebaseFirestore.instance

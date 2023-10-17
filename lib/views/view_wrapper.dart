@@ -1,6 +1,5 @@
-import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/views.dart';
+import 'package:flutter/material.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 
 class ViewWrapper extends StatefulWidget {
   const ViewWrapper({Key? key}) : super(key: key);
@@ -17,6 +16,33 @@ class ViewWrapperState extends State<ViewWrapper> {
     const HistoryPage(),
     const ReportPage(),
   ];
+
+  Future<bool> isProfileComplete() async {
+    final user = Provider.of<AuthService>(
+      context,
+      listen: false,
+    ).currentuser;
+
+    return await DriverDatabase.instance.isProfileComplete(
+      user!.uid,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      isProfileComplete().then((value) {
+        if (!value) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const CompleteInfoPage(),
+            ),
+          );
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
