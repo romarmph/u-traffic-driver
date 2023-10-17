@@ -1,4 +1,3 @@
-import 'package:u_traffic_driver/model/driver_model.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 
@@ -38,7 +37,6 @@ class _RegisterPageState extends State<RegisterPage> {
               isProfileComplete: false,
               middleName: "",
               birthDate: Timestamp.now(),
-              suffix: "",
             ),
             user!.uid);
       } on FirebaseException catch (e) {

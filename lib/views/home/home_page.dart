@@ -1,13 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:u_traffic_driver/config/enums/ticket_status.dart';
 import 'package:u_traffic_driver/model/ticket_model.dart';
 import 'package:u_traffic_driver/provider/license_provider.dart';
-import 'package:u_traffic_driver/utils/exports/extensions.dart';
-import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/models.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/views.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
 import 'package:u_traffic_driver/views/home/widgets/empty_unpaid_violations.dart';
 import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';

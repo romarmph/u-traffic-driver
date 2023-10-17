@@ -16,7 +16,38 @@ extension StringExtension on String {
       return DateFormat('MMMM dd, yyyy')
           .format(DateTime.parse(split('/').join('-')));
     } catch (e) {
-      return '';
+      rethrow;
+    }
+  }
+
+  Timestamp get toTimestamp {
+    try {
+      final format = DateFormat('MMMM dd, yyyy');
+      final date = format.parse(this);
+      return Timestamp.fromDate(date);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  DateTime get toDateTime {
+    try {
+      return DateTime.parse(split(' ').reversed.join('-').split(',').join(''));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  bool get isAgeLegal {
+    try {
+      final format = DateFormat('MMMM dd, yyyy');
+      final date = format.parse(this);
+      final now = DateTime.now();
+      final difference = now.difference(date).inDays;
+      final age = difference / 365;
+      return age >= 18;
+    } catch (e) {
+      rethrow;
     }
   }
 }

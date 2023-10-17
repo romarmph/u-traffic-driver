@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:u_traffic_driver/config/navigator_key.dart';
 
 import 'package:u_traffic_driver/provider/driver_provider.dart';
 import 'package:u_traffic_driver/provider/license_provider.dart';
@@ -44,6 +45,7 @@ class UTrafficDriver extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "U-Traffic Driver",
+        navigatorKey: navigatorKey,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: UColors.blue600,

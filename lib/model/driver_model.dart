@@ -5,7 +5,6 @@ class Driver {
   String firstName;
   String middleName;
   String lastName;
-  String? suffix;
   Timestamp? birthDate;
   String email;
   String phone;
@@ -13,7 +12,6 @@ class Driver {
 
   Driver({
     this.id,
-    this.suffix,
     required this.firstName,
     required this.middleName,
     required this.lastName,
@@ -25,8 +23,6 @@ class Driver {
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
-      "suffix": suffix,
       "firstName": firstName,
       "middleName": middleName,
       "lastName": lastName,
@@ -41,7 +37,6 @@ class Driver {
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
       id: json["id"],
-      suffix: json["suffix"] ?? "",
       firstName: json["firstName"] ?? "",
       middleName: json["middleName"] ?? "",
       lastName: json["lastName"] ?? "",
@@ -55,6 +50,6 @@ class Driver {
   // Create toString method
   @override
   String toString() {
-    return "Driver(id: $id, suffix: $suffix, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, password: )";
+    return "Driver(id: $id, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, password: )";
   }
 }

@@ -1,8 +1,7 @@
+import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
-import 'package:u_traffic_driver/utils/exports/models.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
+import 'package:u_traffic_driver/utils/navigator.dart';
 
 class CompleteInfoPage extends StatefulWidget {
   const CompleteInfoPage({super.key});
@@ -41,22 +40,30 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
             type: QuickAlertType.loading,
             text: 'Saving account...',
           );
-          await saveProfile().then(
-            (value) => Navigator.of(context).pop(),
-          );
+          try {
+            await saveProfile();
+            await _showProfileSaveSuccess().then((value) => goHome());
+          } catch (e) {
+            await _showSomethingWentWrongError();
+          }
         },
       );
     }
   }
 
   Future<void> saveProfile() async {
+    if (!_birthdateController.text.isAgeLegal) {
+      await _showDateInvalidError();
+      return;
+    }
+
     final authProvider = Provider.of<AuthService>(context, listen: false);
 
     final Driver driver = Driver(
       firstName: _firstNameController.text,
       middleName: _middleNameController.text,
       lastName: _lastNameController.text,
-      birthDate: Timestamp.fromDate(DateTime.parse(_birthdateController.text)),
+      birthDate: _birthdateController.text.toTimestamp,
       phone: _phoneController.text,
       email: authProvider.currentuser!.email!,
       isProfileComplete: true,
@@ -107,13 +114,13 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        'Personal Information',
+                        'Your Profile',
                         style: const UTextStyle().text4xlfontmedium.copyWith(
                               color: UColors.white,
                             ),
                       ),
                       Text(
-                        'Fill out this form',
+                        'Please complete your profile',
                         style: const UTextStyle().textbasefontnormal.copyWith(
                               color: UColors.white,
                             ),
@@ -200,9 +207,9 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                               lastDate: DateTime(2024));
 
                           if (pickeddate != null) {
+                            String date = pickeddate.toAmericanDate;
                             setState(() {
-                              _birthdateController.text =
-                                  DateFormat('yyyy-MM-dd').format(pickeddate);
+                              _birthdateController.text = date;
                             });
                           }
                         },
@@ -243,6 +250,30 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showProfileSaveSuccess() async {
+    await QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      text: 'Profile saved successfully',
+    );
+  }
+
+  Future<void> _showDateInvalidError() async {
+    await QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      text: 'You must be 18 years old and above to register',
+    );
+  }
+
+  Future<void> _showSomethingWentWrongError() async {
+    await QuickAlert.show(
+      context: context,
+      type: QuickAlertType.error,
+      text: 'Something went wrong. Please try again later.',
     );
   }
 }
