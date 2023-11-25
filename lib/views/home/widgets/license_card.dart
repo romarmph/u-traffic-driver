@@ -41,9 +41,8 @@ class LicenseCard extends StatelessWidget {
                       ),
                 ),
                 DriverNameTile(
-                  lastName: licenseDetails.lastName,
-                  firstName:
-                      '${licenseDetails.firstName} ${licenseDetails.middleName} ',
+                  lastName: licenseDetails.driverName.split(',')[0],
+                  firstName: '${licenseDetails.driverName.split(',')[1]} ',
                 ),
                 DetailTile(
                   detail: licenseDetails.licenseNumber,
@@ -53,7 +52,7 @@ class LicenseCard extends StatelessWidget {
                   flex: 3,
                   child: DetailTile(
                     detail:
-                        licenseDetails.expirationDate.toDate().toISO8601Date,
+                        licenseDetails.expirationDate!.toDate().toISO8601Date,
                     label: 'Expiration Date',
                   ),
                 ),

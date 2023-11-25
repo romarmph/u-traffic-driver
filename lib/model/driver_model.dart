@@ -5,60 +5,77 @@ class Driver {
   String firstName;
   String middleName;
   String lastName;
-  String? suffix;
-  Timestamp? birthDate;
+  Timestamp birthDate;
   String email;
   String phone;
+  String photoUrl;
   bool isProfileComplete = false;
-  String password;
 
   Driver({
     this.id,
-    this.suffix,
     required this.firstName,
     required this.middleName,
     required this.lastName,
-    this.birthDate,
+    required this.birthDate,
+    this.photoUrl = "",
     required this.email,
     required this.phone,
     required this.isProfileComplete,
-    required this.password,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
-      "suffix": suffix,
       "firstName": firstName,
       "middleName": middleName,
       "lastName": lastName,
       "birthDate": birthDate,
+      "photoUrl": photoUrl,
       "email": email,
       "phone": phone,
-      "password": password,
       "isProfileComplete": isProfileComplete,
     };
   }
 
-  // Create fromJson method
-  factory Driver.fromJson(Map<String, dynamic> json) {
+  factory Driver.fromJson(Map<String, dynamic> json, String uid) {
     return Driver(
-      id: json["id"],
-      suffix: json["suffix"] ?? "",
+      id: uid,
       firstName: json["firstName"] ?? "",
       middleName: json["middleName"] ?? "",
       lastName: json["lastName"] ?? "",
       birthDate: json["birthDate"],
       email: json["email"],
+      photoUrl: json["photoUrl"] ?? "",
       phone: json["phone"] ?? "",
-      password: json["password"] ?? "",
       isProfileComplete: json["isProfileComplete"],
     );
   }
 
-  // Create toString method
+  Driver copyWith({
+    String? id,
+    String? firstName,
+    String? middleName,
+    String? lastName,
+    Timestamp? birthDate,
+    String? email,
+    String? phone,
+    String? photoUrl,
+    bool? isProfileComplete,
+  }) {
+    return Driver(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      middleName: middleName ?? this.middleName,
+      lastName: lastName ?? this.lastName,
+      birthDate: birthDate ?? this.birthDate,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      photoUrl: photoUrl ?? this.photoUrl,
+      isProfileComplete: isProfileComplete ?? this.isProfileComplete,
+    );
+  }
+
   @override
   String toString() {
-    return "Driver(id: $id, suffix: $suffix, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, password: $password)";
+    return "Driver(id: $id, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, isProfileComplete: $isProfileComplete, photoUrl: $photoUrl)";
   }
 }

@@ -1,4 +1,4 @@
-export 'package:u_traffic_driver/views/home_wrapper.dart';
+export 'package:u_traffic_driver/views/view_wrapper.dart';
 export 'package:u_traffic_driver/views/wrapper.dart';
 export 'package:u_traffic_driver/views/auth/login_page.dart';
 export 'package:u_traffic_driver/views/auth/info_form.dart';
@@ -12,3 +12,8 @@ export 'package:u_traffic_driver/views/home/widgets/app_drawer_header.dart';
 export 'package:u_traffic_driver/views/home/widgets/license_detail_tile.dart';
 export 'package:u_traffic_driver/views/history/history_page.dart';
 export 'package:u_traffic_driver/views/report/report_page.dart';
+export 'package:u_traffic_driver/views/auth/login_error_page.dart';
+export 'package:u_traffic_driver/views/account/account_page.dart';
+export 'package:u_traffic_driver/views/account/profile_page.dart';
+export 'package:u_traffic_driver/views/account/widgets/profile_photo.dart';
+export 'package:u_traffic_driver/views/account/password_page.dart';

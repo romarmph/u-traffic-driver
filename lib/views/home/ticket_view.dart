@@ -1,15 +1,11 @@
-import 'package:u_traffic_driver/config/device/device_constraint.dart';
 import 'package:u_traffic_driver/config/enums/ticket_status.dart';
+import 'package:u_traffic_driver/model/issued_violation.dart';
 import 'package:u_traffic_driver/model/ticket_model.dart';
 import 'package:u_traffic_driver/model/violation_model.dart';
-import 'package:u_traffic_driver/provider/violations_provider.dart';
 import 'package:u_traffic_driver/utils/exports/extensions.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
 import 'package:u_traffic_driver/utils/exports/views.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
 
 class TicketView extends StatefulWidget {
   const TicketView({super.key, required this.ticket});
@@ -35,8 +31,6 @@ class _TicketViewState extends State<TicketView>
 
   @override
   Widget build(BuildContext context) {
-    final violationProvider = Provider.of<ViolationProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('View Ticket'),
@@ -70,35 +64,29 @@ class _TicketViewState extends State<TicketView>
                   ListView(
                     children: [
                       _detailCard(
-                        widget.ticket.licenseNumber,
+                        widget.ticket.licenseNumber ?? "",
                         'License Number',
                       ),
                       _detailCard(
-                        widget.ticket.firstName,
-                        'First Name',
+                        widget.ticket.driverName ?? "",
+                        'Driver Name',
                       ),
                       _detailCard(
-                        widget.ticket.middleName,
-                        'Middle Name',
+                        widget.ticket.birthDate != null
+                            ? widget.ticket.birthDate!.toDate().toAmericanDate
+                            : "",
+                        'Birthdate',
                       ),
                       _detailCard(
-                        widget.ticket.lastName,
-                        'Last Name',
-                      ),
-                      _detailCard(
-                        widget.ticket.birthDate.toDate().toAmericanDate,
-                        'Last Name',
-                      ),
-                      _detailCard(
-                        widget.ticket.address,
+                        widget.ticket.address ?? "",
                         'Address',
                       ),
                       _detailCard(
-                        widget.ticket.phone,
+                        widget.ticket.phone ?? "",
                         'Contact Number',
                       ),
                       _detailCard(
-                        widget.ticket.email,
+                        widget.ticket.email ?? "",
                         'Email Address',
                       ),
                     ],
@@ -106,65 +94,54 @@ class _TicketViewState extends State<TicketView>
                   ListView(
                     children: [
                       _detailCard(
-                        widget.ticket.vehicleType,
+                        widget.ticket.vehicleTypeName,
                         'Vehicle Type',
                       ),
                       _detailCard(
-                        widget.ticket.plateNumber,
+                        widget.ticket.plateNumber ?? "",
                         'Plate Number',
                       ),
                       _detailCard(
-                        widget.ticket.engineNumber,
+                        widget.ticket.engineNumber ?? "",
                         'Engine Number',
                       ),
                       _detailCard(
-                        widget.ticket.chassisNumber,
+                        widget.ticket.chassisNumber ?? "",
                         'Chassis Number',
                       ),
                       _detailCard(
-                        widget.ticket.vehicleOwner,
+                        widget.ticket.vehicleOwner ?? "",
                         'Vehicle Owner',
                       ),
                       _detailCard(
-                        widget.ticket.vehicleOwnerAddress,
+                        widget.ticket.vehicleOwnerAddress ?? "",
                         'Vehicle Owner Address',
                       ),
                     ],
                   ),
-                  Consumer<ViolationProvider>(
-                    builder: (context, value, child) {
-                      final List<Violation> selected = [];
+                  ListView.builder(
+                    itemCount: widget.ticket.issuedViolations.length,
+                    itemBuilder: (context, index) {
+                      final IssuedViolation violation =
+                          widget.ticket.issuedViolations[index];
 
-                      for (final violation in value.getViolations) {
-                        if (widget.ticket.violationsID.contains(violation.id)) {
-                          selected.add(violation);
-                        }
-                      }
-
-                      return ListView.builder(
-                        itemCount: selected.length,
-                        itemBuilder: (context, index) {
-                          final Violation violation = selected[index];
-
-                          return ListTile(
-                            title: Text(
-                              violation.name,
-                            ),
-                            trailing: Text(
-                              violation.fine.toString(),
-                              style: const TextStyle(
-                                color: UColors.red400,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            titleTextStyle: const TextStyle(
-                              color: UColors.gray600,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          );
-                        },
+                      return ListTile(
+                        title: Text(
+                          violation.violation,
+                        ),
+                        trailing: Text(
+                          violation.fine.toString(),
+                          style: const TextStyle(
+                            color: UColors.red400,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        titleTextStyle: const TextStyle(
+                          color: UColors.gray600,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
                       );
                     },
                   ),
@@ -173,14 +150,11 @@ class _TicketViewState extends State<TicketView>
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _detailCard(
-                          widget.ticket.dateCreated!.toDate().toAmericanDate,
+                          widget.ticket.dateCreated.toDate().toAmericanDate,
                           'Date Issued',
                         ),
                         _detailCard(
-                          widget.ticket.dateCreated!
-                              .toDate()
-                              .dueDate
-                              .formatDate,
+                          widget.ticket.dateCreated.toDate().dueDate.formatDate,
                           'Due Date',
                         ),
                         _detailCard(
@@ -194,7 +168,7 @@ class _TicketViewState extends State<TicketView>
                           'Violation Time',
                         ),
                         _detailCard(
-                          widget.ticket.placeOfViolation['address'],
+                          widget.ticket.violationPlace.address,
                           'Place of Violation',
                         ),
                         _detailCard(
@@ -228,13 +202,7 @@ class _TicketViewState extends State<TicketView>
                   ),
                 ),
                 Text(
-                  getTotalFine(violationProvider.getViolations
-                      .where(
-                        (element) => widget.ticket.violationsID.contains(
-                          element.id,
-                        ),
-                      )
-                      .toList()),
+                  getTotalFine(widget.ticket.issuedViolations),
                   style: const TextStyle(
                     color: UColors.red400,
                     fontSize: 20,
@@ -259,7 +227,7 @@ class _TicketViewState extends State<TicketView>
         status.toString().split('.').last.substring(1);
   }
 
-  String getTotalFine(List<Violation> violations) {
+  String getTotalFine(List<IssuedViolation> violations) {
     double total = 0;
 
     for (final violation in violations) {

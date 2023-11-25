@@ -1,3 +1,5 @@
+import 'package:u_traffic_driver/config/navigator_key.dart';
+import 'package:u_traffic_driver/database/license_database.dart';
 import 'package:u_traffic_driver/services/auth_service.dart';
 import 'package:u_traffic_driver/utils/exports/extensions.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
@@ -25,7 +27,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
   @override
   void initState() {
     _tabController = TabController(
-      length: 2,
+      length: 3,
       vsync: this,
       initialIndex: 0,
     );
@@ -62,6 +64,47 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
     return Scaffold(
       appBar: AppBar(
         title: const Text('View license details'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final result = await QuickAlert.show(
+                context: context,
+                type: QuickAlertType.warning,
+                title: "Delete license details",
+                text:
+                    "Are you sure you want to delete this license details? This action cannot be undone.",
+                showCancelBtn: true,
+                onConfirmBtnTap: () {
+                  Navigator.of(context).pop(true);
+                },
+              );
+
+              if (result == null) return;
+
+              final db = LicenseDatabase.instance;
+              QuickAlert.show(
+                context: navigatorKey.currentContext!,
+                type: QuickAlertType.loading,
+                title: "Deleting license details",
+                text: "Please wait...",
+              );
+              await db.deleteLicenseDetails(widget.licenseDetails.licenseID!);
+              Navigator.pop(navigatorKey.currentContext!);
+              await QuickAlert.show(
+                context: navigatorKey.currentContext!,
+                type: QuickAlertType.success,
+                title: "License details deleted",
+                text: "License details has been deleted successfully",
+              );
+
+              Navigator.pop(navigatorKey.currentContext!);
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: UColors.red500,
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(USpace.space12),
@@ -77,6 +120,9 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                 Tab(
                   text: 'License Information',
                 ),
+                Tab(
+                  text: 'License Image',
+                ),
               ],
             ),
             Expanded(
@@ -91,19 +137,11 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           height: USpace.space12,
                         ),
                         _detailCard(
-                          widget.licenseDetails.lastName,
-                          "Last Name",
+                          widget.licenseDetails.driverName,
+                          "Driver Name",
                         ),
                         _detailCard(
-                          widget.licenseDetails.firstName,
-                          "First Name",
-                        ),
-                        _detailCard(
-                          widget.licenseDetails.middleName,
-                          "Middle Name",
-                        ),
-                        _detailCard(
-                          widget.licenseDetails.birthdate
+                          widget.licenseDetails.birthdate!
                               .toDate()
                               .toAmericanDate,
                           "Nationality",
@@ -167,7 +205,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           "License Number",
                         ),
                         _detailCard(
-                          widget.licenseDetails.expirationDate
+                          widget.licenseDetails.expirationDate!
                               .toDate()
                               .toAmericanDate,
                           "Expiration Date",
@@ -186,6 +224,30 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                         ),
                       ],
                     ),
+                  ),
+                  CachedNetworkImage(
+                    imageUrl: widget.licenseDetails.photoUrl,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    errorWidget: (context, url, error) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error,
+                            color: UColors.gray700,
+                          ),
+                          Text(
+                            "Error loading image",
+                            style: const UTextStyle().textsmfontmedium.copyWith(
+                                  color: UColors.gray700,
+                                ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -212,7 +274,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
     showDialog(
       context: context,
       builder: (context) {
-        final authProvider = Provider.of<AuthService>(context, listen: false);
+        final authProvider = AuthService.instance;
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,

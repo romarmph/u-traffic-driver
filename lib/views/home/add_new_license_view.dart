@@ -1,3 +1,6 @@
+import 'package:flutter/services.dart';
+import 'package:u_traffic_driver/config/navigator_key.dart';
+import 'package:u_traffic_driver/database/license_database.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
@@ -21,9 +24,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
 
   final _licenseNumberController = TextEditingController();
   final _expirationDateController = TextEditingController();
-  final _firstNameController = TextEditingController();
-  final _middleNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
+  final _driverNameController = TextEditingController();
   final _addressController = TextEditingController();
   final _nationalityController = TextEditingController();
   final _sexController = TextEditingController();
@@ -35,6 +36,8 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
   final _conditionsController = TextEditingController();
   final _bloodTypeController = TextEditingController();
   final _eyesColorController = TextEditingController();
+
+  String? previousImage;
 
   @override
   void initState() {
@@ -49,23 +52,22 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
       appBar: AppBar(
         title: const Text('Add New License'),
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(USpace.space12),
-          child: Column(
-            children: [
-              TabBar(
-                isScrollable: true,
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Image'),
-                  Tab(text: 'Personal Details'),
-                  Tab(text: 'License Details'),
-                ],
-              ),
-              Expanded(
-                // This Expanded is necessary for the TabBarView
+      body: Padding(
+        padding: const EdgeInsets.all(USpace.space12),
+        child: Column(
+          children: [
+            TabBar(
+              isScrollable: true,
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Image'),
+                Tab(text: 'Personal Details'),
+                Tab(text: 'License Details'),
+              ],
+            ),
+            Expanded(
+              child: Form(
+                key: _formKey,
                 child: TabBarView(
                   controller: _tabController,
                   children: [
@@ -106,6 +108,18 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                           ElevatedButton(
                             onPressed: () async {
                               final path = await takeImage();
+
+                              if (path != null) {
+                                previousImage = path;
+                              }
+
+                              if (path == null && previousImage != null) {
+                                setState(() {
+                                  imagePath = previousImage;
+                                });
+                                return;
+                              }
+
                               setState(() {
                                 imagePath = path;
                               });
@@ -117,9 +131,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                     ),
                     SingleChildScrollView(
                       child: PersonalDetailsForm(
-                        firstNameController: _firstNameController,
-                        middleNameController: _middleNameController,
-                        lastNameController: _lastNameController,
+                        driverNameController: _driverNameController,
                         addressController: _addressController,
                         nationalityController: _nationalityController,
                         sexController: _sexController,
@@ -141,9 +153,9 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
                     ),
                   ],
                 ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
       bottomNavigationBar: _buildActionButtons(),
@@ -172,9 +184,8 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
   }
 
   Future<String?> takeImage() async {
-    final path = await ScannerService.instance.getImageFromCamera();
+    final path = await ScannerService.instance.takeImageFromCamera();
     if (path == null) {
-      showError("Error", "No image taken");
       return null;
     }
     showLoading();
@@ -188,14 +199,19 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
     }
 
     _licenseNumberController.text = details.licenseNumber;
-    _expirationDateController.text = details.expirationDate.toDate().toString();
-    _firstNameController.text = details.firstName;
-    _middleNameController.text = details.middleName;
-    _lastNameController.text = details.lastName;
+    _expirationDateController.text = details.expirationDate != null
+        ? details.expirationDate!.toDate().toAmericanDate
+        : "";
+    _driverNameController.text = details.driverName;
     _addressController.text = details.address;
-    _birthdateController.text = details.birthdate.toDate().toString();
+    _birthdateController.text = details.birthdate != null
+        ? details.birthdate!.toDate().toAmericanDate
+        : "";
     _nationalityController.text = details.nationality;
-    _sexController.text = details.sex;
+    _sexController.text =
+        details.sex.toLowerCase() != "f" || details.sex.toLowerCase() != "m"
+            ? ""
+            : details.sex;
     _heightController.text = details.height.toString();
     _weightController.text = details.weight.toString();
     _agencyCodeController.text = details.agencyCode;
@@ -208,16 +224,19 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
   }
 
   Future<void> saveLicense() async {
-    final licenseDetails = LicenseDetails(
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    LicenseDetails licenseDetails = LicenseDetails(
       licenseNumber: _licenseNumberController.text,
-      expirationDate: _expirationDateController.text.getTimeStamp!,
-      firstName: _firstNameController.text,
-      middleName: _middleNameController.text,
-      lastName: _lastNameController.text,
+      expirationDate:
+          _expirationDateController.text.tryParseToDateTime!.toTimestamp,
+      driverName: _driverNameController.text,
       address: _addressController.text,
       nationality: _nationalityController.text,
       sex: _sexController.text,
-      birthdate: _birthdateController.text.getTimeStamp!,
+      birthdate: _birthdateController.text.tryParseToDateTime!.toTimestamp,
       height: double.parse(_heightController.text),
       weight: double.parse(_weightController.text),
       agencyCode: _agencyCodeController.text,
@@ -225,19 +244,36 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
       conditions: _conditionsController.text,
       bloodType: _bloodTypeController.text,
       eyesColor: _eyesColorController.text,
-      userID: AuthService().currentuser!.uid,
+      userID: AuthService.instance.currentuser!.uid,
       dateCreated: Timestamp.now(),
     );
 
     showLoading();
-    await FirebaseFirestore.instance
-        .collection('licenses')
-        .add(
-          licenseDetails.toJson(),
-        )
-        .then(
-          (value) => popLoading(),
-        );
+    try {
+      final path = await ImageService.instance.uploadLicense(
+        File(imagePath!),
+        licenseDetails.licenseNumber,
+      );
+      licenseDetails = licenseDetails.copyWith(
+        photoUrl: path,
+      );
+      await LicenseDatabase.instance.addLicenseDetails(
+        licenseDetails,
+      );
+      popLoading();
+    } catch (e) {
+      popLoading();
+      showError("Error", e.toString());
+    }
+
+    await QuickAlert.show(
+      context: navigatorKey.currentContext!,
+      type: QuickAlertType.success,
+      title: "Success",
+      text: "License added successfully",
+    );
+
+    Navigator.pop(navigatorKey.currentContext!);
   }
 
   Widget _buildActionButtons() {
@@ -325,8 +361,21 @@ class LicenseDetailsForm extends StatelessWidget {
         LicenseFormField(
           controller: expirationDateController,
           labelText: 'Expiration Date',
+          readOnly: true,
           validator: (value) {
             return null;
+          },
+          onTap: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+            );
+
+            if (date != null) {
+              expirationDateController.text = date.toAmericanDate;
+            }
           },
         ),
         const SizedBox(
@@ -367,9 +416,7 @@ class LicenseDetailsForm extends StatelessWidget {
 class PersonalDetailsForm extends StatelessWidget {
   const PersonalDetailsForm({
     super.key,
-    required this.firstNameController,
-    required this.middleNameController,
-    required this.lastNameController,
+    required this.driverNameController,
     required this.addressController,
     required this.nationalityController,
     required this.sexController,
@@ -378,9 +425,7 @@ class PersonalDetailsForm extends StatelessWidget {
     required this.weightController,
   });
 
-  final TextEditingController firstNameController;
-  final TextEditingController middleNameController;
-  final TextEditingController lastNameController;
+  final TextEditingController driverNameController;
   final TextEditingController addressController;
   final TextEditingController nationalityController;
   final TextEditingController sexController;
@@ -396,29 +441,13 @@ class PersonalDetailsForm extends StatelessWidget {
           height: USpace.space12,
         ),
         LicenseFormField(
-          controller: firstNameController,
-          labelText: 'First Name',
+          controller: driverNameController,
+          labelText: 'Driver Name',
           validator: (value) {
-            return null;
-          },
-        ),
-        const SizedBox(
-          height: USpace.space12,
-        ),
-        LicenseFormField(
-          controller: middleNameController,
-          labelText: 'Middle Name',
-          validator: (value) {
-            return null;
-          },
-        ),
-        const SizedBox(
-          height: USpace.space12,
-        ),
-        LicenseFormField(
-          controller: lastNameController,
-          labelText: 'Last Name',
-          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Driver name is required";
+            }
+
             return null;
           },
         ),
@@ -428,8 +457,25 @@ class PersonalDetailsForm extends StatelessWidget {
         LicenseFormField(
           controller: birthDateController,
           labelText: 'Birthdate',
+          readOnly: true,
           validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Birthdate is required";
+            }
+
             return null;
+          },
+          onTap: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime.now(),
+            );
+
+            if (date != null) {
+              birthDateController.text = date.toAmericanDate;
+            }
           },
         ),
         const SizedBox(
@@ -439,6 +485,10 @@ class PersonalDetailsForm extends StatelessWidget {
           controller: addressController,
           labelText: 'Address',
           validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Address is required";
+            }
+
             return null;
           },
         ),
@@ -448,7 +498,20 @@ class PersonalDetailsForm extends StatelessWidget {
         LicenseFormField(
           controller: sexController,
           labelText: 'Sex',
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp("[FfMm]")),
+            TextInputFormatter.withFunction((oldValue, newValue) {
+              return newValue.copyWith(
+                text: newValue.text.toUpperCase(),
+              );
+            }),
+            LengthLimitingTextInputFormatter(1),
+          ],
           validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Sex is required';
+            }
+
             return null;
           },
         ),
@@ -459,6 +522,10 @@ class PersonalDetailsForm extends StatelessWidget {
           controller: nationalityController,
           labelText: 'Nationality',
           validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Nationality is required';
+            }
+
             return null;
           },
         ),
@@ -469,6 +536,10 @@ class PersonalDetailsForm extends StatelessWidget {
           controller: heightController,
           labelText: 'Height',
           validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Height is requried';
+            }
+
             return null;
           },
         ),
@@ -479,6 +550,9 @@ class PersonalDetailsForm extends StatelessWidget {
           controller: weightController,
           labelText: 'Weight',
           validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Weight is requried';
+            }
             return null;
           },
         ),

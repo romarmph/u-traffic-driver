@@ -14,6 +14,10 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Drawer(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+          side: BorderSide.none,
+        ),
         backgroundColor: UColors.white,
         width: deviceWidth(context) * 0.9,
         child: Column(
@@ -22,6 +26,17 @@ class AppDrawer extends StatelessWidget {
             const AppDrawerHeader(),
             const LicenseExpantionListTile(),
             const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Account Settings'),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AccountPage(),
+                  ),
+                );
+              },
+            ),
             TextButton.icon(
               onPressed: logout,
               icon: const Icon(Icons.logout),
@@ -37,7 +52,7 @@ class AppDrawer extends StatelessWidget {
   }
 
   void logout() {
-    AuthService().signOut();
+    AuthService.instance.signOut();
   }
 }
 
@@ -48,7 +63,7 @@ class LicenseExpantionListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthService>(context, listen: false);
+    final authProvider = AuthService.instance;
 
     return Padding(
       padding: const EdgeInsets.all(USpace.space12),
@@ -79,7 +94,7 @@ class LicenseExpantionListTile extends StatelessWidget {
             );
             return ListTile(
               title: Text(licenseDetails.licenseNumber),
-              subtitle: Text(licenseDetails.firstName),
+              subtitle: Text(licenseDetails.driverName),
               onTap: () => goToLicenseDetailView(licenseDetails, context),
             );
           }).toList();

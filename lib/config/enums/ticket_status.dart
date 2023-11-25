@@ -1,5 +1,7 @@
 enum TicketStatus {
-  unpaid,
   paid,
-  voided,
+  unpaid,
+  cancelled,
+  refunded,
+  expired,
 }

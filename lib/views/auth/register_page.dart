@@ -1,15 +1,14 @@
-import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/views/auth/register_page.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -26,28 +25,32 @@ class _LoginPageState extends State<LoginPage> {
       final authService = AuthService.instance;
 
       try {
-        await authService.signInWithEmailAndPassword(
+        final user = await authService.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
+        final driver = Driver(
+          firstName: "",
+          lastName: "",
+          email: email,
+          phone: "",
+          isProfileComplete: false,
+          middleName: "",
+          birthDate: Timestamp.now(),
+        );
+
+        await DriverDatabase.instance.addDriver(driver, user!.uid);
       } on FirebaseException catch (e) {
-        if (e.code.contains('too-many-requests')) {
+        if (e.code == "email-already-in-use") {
           setState(() {
-            _emailError = "Too many requests. Try again later";
+            _emailError = "Email already in use";
             _formKey.currentState!.validate();
           });
         }
 
-        if (e.code == "wrong-password") {
+        if (e.code == "weak-password") {
           setState(() {
-            _passwordError = "Incorrect password";
-            _formKey.currentState!.validate();
-          });
-        }
-      } on Exception catch (e) {
-        if (e.toString().contains("driver-account-not-found")) {
-          setState(() {
-            _emailError = "Driver account not found";
+            _passwordError = "Password is too weak";
             _formKey.currentState!.validate();
           });
         }
@@ -80,13 +83,13 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const SizedBox(height: USpace.space80),
                     Text(
-                      'Sign in to your Account',
+                      'Create Account',
                       style: const UTextStyle().text4xlfontmedium.copyWith(
                             color: UColors.white,
                           ),
                     ),
                     Text(
-                      'Login to continue',
+                      'Register to continue',
                       style: const UTextStyle().textbasefontnormal.copyWith(
                             color: UColors.white,
                           ),
@@ -101,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Email or Phone number',
+                      'Email',
                       style: const UTextStyle().textsmfontmedium.copyWith(
                             color: UColors.gray900,
                           ),
@@ -173,48 +176,47 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: USpace.space12),
                     ElevatedButton(
-                      onPressed: () async {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        await loginBtnPressed();
-                        setState(() {
-                          isLoading = false;
-                        });
-                      },
-                      child: isLoading
-                          ? const CircularProgressIndicator(
-                              color: UColors.white,
-                            )
-                          : Text(
-                              'Login',
-                              style: const UTextStyle()
-                                  .textbasefontmedium
-                                  .copyWith(
-                                    color: UColors.white,
-                                  ),
-                            ),
-                    ),
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await loginBtnPressed();
+                          setState(() {
+                            isLoading = false;
+                          });
+                        },
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                color: UColors.white,
+                              )
+                            : Text(
+                                'Create Account',
+                                style: const UTextStyle()
+                                    .textbasefontmedium
+                                    .copyWith(
+                                      color: UColors.white,
+                                    ),
+                              )),
                     const SizedBox(width: USpace.space8),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
+                            builder: (context) => const LoginPage(),
                           ),
                         );
                       },
                       child: Row(
                         children: [
                           Text(
-                            "Don't have an account? ",
+                            "Already have an account? ",
                             style:
                                 const UTextStyle().textbasefontmedium.copyWith(
                                       color: UColors.gray600,
                                     ),
                           ),
                           Text(
-                            'Register',
+                            'Login',
                             style:
                                 const UTextStyle().textbasefontmedium.copyWith(
                                       color: UColors.blue700,
