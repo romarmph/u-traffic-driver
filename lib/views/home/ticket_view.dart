@@ -1,4 +1,5 @@
 import 'package:u_traffic_driver/config/enums/ticket_status.dart';
+import 'package:u_traffic_driver/model/issued_violation.dart';
 import 'package:u_traffic_driver/model/ticket_model.dart';
 import 'package:u_traffic_driver/model/violation_model.dart';
 import 'package:u_traffic_driver/utils/exports/extensions.dart';
@@ -118,37 +119,32 @@ class _TicketViewState extends State<TicketView>
                       ),
                     ],
                   ),
-                  // Consumer<ViolationProvider>(
-                  //   builder: (context, value, child) {
-                  //     final List<Violation> selected = [];
+                  ListView.builder(
+                    itemCount: widget.ticket.issuedViolations.length,
+                    itemBuilder: (context, index) {
+                      final IssuedViolation violation =
+                          widget.ticket.issuedViolations[index];
 
-                  //     return ListView.builder(
-                  //       itemCount: selected.length,
-                  //       itemBuilder: (context, index) {
-                  //         final Violation violation = selected[index];
-
-                  //         return ListTile(
-                  //           title: Text(
-                  //             violation.name,
-                  //           ),
-                  //           trailing: Text(
-                  //             violation.fine.toString(),
-                  //             style: const TextStyle(
-                  //               color: UColors.red400,
-                  //               fontSize: 18,
-                  //               fontWeight: FontWeight.w600,
-                  //             ),
-                  //           ),
-                  //           titleTextStyle: const TextStyle(
-                  //             color: UColors.gray600,
-                  //             fontSize: 20,
-                  //             fontWeight: FontWeight.w600,
-                  //           ),
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  // ),
+                      return ListTile(
+                        title: Text(
+                          violation.violation,
+                        ),
+                        trailing: Text(
+                          violation.fine.toString(),
+                          style: const TextStyle(
+                            color: UColors.red400,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        titleTextStyle: const TextStyle(
+                          color: UColors.gray600,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      );
+                    },
+                  ),
                   SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -194,7 +190,7 @@ class _TicketViewState extends State<TicketView>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
@@ -206,7 +202,7 @@ class _TicketViewState extends State<TicketView>
                   ),
                 ),
                 Text(
-                  " FINE ",
+                  getTotalFine(widget.ticket.issuedViolations),
                   style: const TextStyle(
                     color: UColors.red400,
                     fontSize: 20,
@@ -231,7 +227,7 @@ class _TicketViewState extends State<TicketView>
         status.toString().split('.').last.substring(1);
   }
 
-  String getTotalFine(List<Violation> violations) {
+  String getTotalFine(List<IssuedViolation> violations) {
     double total = 0;
 
     for (final violation in violations) {

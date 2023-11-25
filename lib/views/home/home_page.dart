@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:u_traffic_driver/riverpod/license.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
-import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
+import 'package:u_traffic_driver/utils/navigator.dart';
+import 'package:u_traffic_driver/views/home/widgets/empty_unpaid_violations.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authProvider = AuthService.instance;
-
     return Scaffold(
       backgroundColor: UColors.white,
       appBar: AppBar(
@@ -42,7 +42,6 @@ class HomePage extends ConsumerWidget {
           children: [
             ref.watch(getAllDriversLicense).when(
                   data: (data) {
-                    print(data);
                     final List<Widget> carouselItems = data
                         .map((detail) => LicenseCard(
                               licenseDetails: detail,
@@ -83,149 +82,121 @@ class HomePage extends ConsumerWidget {
   }
 }
 
-// class UnpaidTicketsBuilder extends StatelessWidget {
-//   const UnpaidTicketsBuilder({
-//     super.key,
-//   });
+class UnpaidTicketsBuilder extends ConsumerWidget {
+  const UnpaidTicketsBuilder({
+    super.key,
+  });
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Expanded(
-//       child: StreamBuilder<QuerySnapshot>(
-//           stream: FirebaseFirestore.instance
-//               .collection('tickets')
-//               .where('status', isEqualTo: 'unpaid')
-//               .where(
-//                 'licenseNumber',
-//                 whereIn: licenseProvider.licenseList
-//                     .map((e) => e.licenseNumber)
-//                     .toList(),
-//               )
-//               .snapshots(),
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return const Center(
-//                 child: CircularProgressIndicator(),
-//               );
-//             }
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Expanded(
+      child: ref.watch(getAllUnpaidTickets).when(
+            data: (tickets) {
+              if (tickets.isEmpty) {
+                return const EmptyUnpaidViolationsState();
+              }
 
-//             if (snapshot.hasError) {
-//               return const Center(
-//                 child: Text('Something went wrong'),
-//               );
-//             }
+              return Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: ListView.builder(
+                  itemCount: tickets.length,
+                  itemBuilder: (context, index) {
+                    Ticket ticket = tickets[index];
 
-//             if (snapshot.data!.docs.isEmpty) {
-//               return const EmptyUnpaidViolationsState();
-//             }
-
-//             final List<Ticket> tickets = snapshot.data!.docs.map((e) {
-//               Map<String, dynamic> map = e.data() as Map<String, dynamic>;
-
-//               map['status'] = TicketStatus.values.firstWhere(
-//                 (element) {
-//                   return element.toString() == 'TicketStatus.${map["status"]}';
-//                 },
-//               );
-
-//               return Ticket.fromJson(
-//                 map,
-//               );
-//             }).toList();
-
-//             return Padding(
-//               padding: const EdgeInsets.all(12.0),
-//               child: ListView.builder(
-//                 itemCount: tickets.length,
-//                 itemBuilder: (context, index) {
-//                   Ticket ticket = tickets[index];
-
-//                   return GestureDetector(
-//                     onTap: () => goTicketView(context, ticket),
-//                     child: Card(
-//                       elevation: 0,
-//                       color: UColors.red500,
-//                       child: Padding(
-//                         padding: const EdgeInsets.all(8.0),
-//                         child: Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             Row(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Expanded(
-//                                   child: DetailTile(
-//                                     detail: ticket.ticketNumber.toString(),
-//                                     label: 'Ticket Number',
-//                                     labelStyle: const UTextStyle()
-//                                         .textbasefontmedium
-//                                         .copyWith(
-//                                           color: UColors.white,
-//                                         ),
-//                                   ),
-//                                 ),
-//                                 const Row(
-//                                   mainAxisAlignment: MainAxisAlignment.center,
-//                                   children: [
-//                                     Text(
-//                                       'Tap to view details',
-//                                       style: TextStyle(
-//                                         color: UColors.white,
-//                                       ),
-//                                     ),
-//                                     SizedBox(
-//                                       width: 4,
-//                                     ),
-//                                     Icon(
-//                                       Icons.info_outline,
-//                                       color: UColors.white,
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ],
-//                             ),
-//                             DetailTile(
-//                               detail: ticket.licenseNumber ?? "",
-//                               label: 'License Number',
-//                               labelStyle: const TextStyle(
-//                                 color: UColors.white,
-//                               ),
-//                             ),
-//                             Row(
-//                               children: [
-//                                 Expanded(
-//                                   child: DetailTile(
-//                                     detail: ticket.dateCreated
-//                                         .toDate()
-//                                         .toISO8601Date,
-//                                     label: 'Date Issued',
-//                                     labelStyle: const UTextStyle()
-//                                         .textbasefontmedium
-//                                         .copyWith(
-//                                           color: UColors.white,
-//                                         ),
-//                                   ),
-//                                 ),
-//                                 Expanded(
-//                                   child: DetailTile(
-//                                     detail: ticket.dateCreated.toDate().dueDate,
-//                                     label: 'Due Date',
-//                                     labelStyle: const TextStyle(
-//                                       color: UColors.white,
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   );
-//                 },
-//               ),
-//             );
-//           }),
-//     );
-//   }
-// }
+                    return GestureDetector(
+                      onTap: () => goTicketView(context, ticket),
+                      child: Card(
+                        elevation: 0,
+                        color: UColors.red500,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: DetailTile(
+                                      detail: ticket.ticketNumber.toString(),
+                                      label: 'Ticket Number',
+                                      labelStyle: const UTextStyle()
+                                          .textbasefontmedium
+                                          .copyWith(
+                                            color: UColors.white,
+                                          ),
+                                    ),
+                                  ),
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Tap to view details',
+                                        style: TextStyle(
+                                          color: UColors.white,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 4,
+                                      ),
+                                      Icon(
+                                        Icons.info_outline,
+                                        color: UColors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              DetailTile(
+                                detail: ticket.licenseNumber ?? "",
+                                label: 'License Number',
+                                labelStyle: const TextStyle(
+                                  color: UColors.white,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DetailTile(
+                                      detail: ticket.dateCreated
+                                          .toDate()
+                                          .toISO8601Date,
+                                      label: 'Date Issued',
+                                      labelStyle: const UTextStyle()
+                                          .textbasefontmedium
+                                          .copyWith(
+                                            color: UColors.white,
+                                          ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: DetailTile(
+                                      detail:
+                                          ticket.dateCreated.toDate().dueDate,
+                                      label: 'Due Date',
+                                      labelStyle: const TextStyle(
+                                        color: UColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+            error: (error, stackTrace) => const Center(
+              child: Text('Something went wrong'),
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+    );
+  }
+}

@@ -30,15 +30,11 @@ class AppDrawer extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text('Account Settings'),
               onTap: () {
-                try {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const AccountPage(),
-                    ),
-                  );
-                } catch (e) {
-                  print(e);
-                }
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AccountPage(),
+                  ),
+                );
               },
             ),
             TextButton.icon(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:u_traffic_driver/riverpod/auth.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 
 class EnforcerTerminatedPage extends ConsumerWidget {

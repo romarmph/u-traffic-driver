@@ -1,11 +1,13 @@
+import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
+import 'package:u_traffic_driver/views/home/ticket_view.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends ConsumerWidget {
   const HistoryPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     return Scaffold(
       backgroundColor: UColors.gray50,
       appBar: AppBar(
@@ -18,7 +20,7 @@ class HistoryPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
         ),
         title: Text(
-          'History',
+          'Ticket History',
           style: const UTextStyle().textlgfontbold,
         ),
         actions: [
@@ -36,76 +38,117 @@ class HistoryPage extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: Text(
-                  'Messages',
+          child: ref.watch(getAllTickets).when(
+                data: (data) {
+                  if (data.isEmpty) {
+                    return const Center(
+                      child: Text('No tickets found'),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return HistoryTicketCard(
+                        ticket: data[index],
+                      );
+                    },
+                  );
+                },
+                error: (error, stackTrace) => const Center(
+                  child: Text('Something went wrong'),
+                ),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+class HistoryTicketCard extends StatelessWidget {
+  const HistoryTicketCard({
+    super.key,
+    required this.ticket,
+  });
+
+  final Ticket ticket;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Stack(
+        alignment: Alignment.topRight,
+        children: [
+          ListTile(
+            title: Text(
+              ticket.ticketNumber.toString(),
+              style: const UTextStyle()
+                  .textbasefontmedium
+                  .copyWith(color: UColors.gray700, fontSize: 16),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Issued by: ${ticket.enforcerName}',
                   style: const UTextStyle()
                       .textsmfontmedium
                       .copyWith(color: UColors.gray500),
                 ),
+                Text(
+                    'Date Issued: ${ticket.dateCreated.toDate().toAmericanDate}',
+                    style: const UTextStyle()
+                        .textsmfontmedium
+                        .copyWith(color: UColors.gray500)),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 50),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) {
+                        return TicketView(
+                          ticket: ticket,
+                        );
+                      }),
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.star,
+                    color: UColors.yellow300,
+                  ),
+                ),
               ),
-              Card(
-                child: Stack(
-                  alignment: Alignment.topRight,
-                  children: [
-                    ListTile(
-                      title: Text(
-                        'Driving Without a Valid License',
-                        style: const UTextStyle()
-                            .textbasefontmedium
-                            .copyWith(color: UColors.gray700, fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10, right: 10),
+                child: Text(
+                  getTotalFine(ticket.issuedViolations),
+                  style: const UTextStyle().textbasefontmedium.copyWith(
+                        color: UColors.gray700,
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Issued by: Mar Bert Cerda',
-                            style: const UTextStyle()
-                                .textsmfontmedium
-                                .copyWith(color: UColors.gray500),
-                          ),
-                          Text('Date Issued: May 24, 2023',
-                              style: const UTextStyle()
-                                  .textsmfontmedium
-                                  .copyWith(color: UColors.gray500)),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 50),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.star,
-                              color: UColors.yellow300,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10, right: 10),
-                          child: Text(
-                            'Php 3,000',
-                            style:
-                                const UTextStyle().textbasefontmedium.copyWith(
-                                      color: UColors.gray700,
-                                    ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
+  }
+
+  String getTotalFine(List<IssuedViolation> violations) {
+    var totalFine = 0;
+
+    for (var violation in violations) {
+      totalFine += violation.fine;
+    }
+
+    return totalFine.toString();
   }
 }
