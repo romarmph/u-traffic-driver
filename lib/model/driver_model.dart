@@ -5,9 +5,10 @@ class Driver {
   String firstName;
   String middleName;
   String lastName;
-  Timestamp? birthDate;
+  Timestamp birthDate;
   String email;
   String phone;
+  String photoUrl;
   bool isProfileComplete = false;
 
   Driver({
@@ -15,7 +16,8 @@ class Driver {
     required this.firstName,
     required this.middleName,
     required this.lastName,
-    this.birthDate,
+    required this.birthDate,
+    this.photoUrl = "",
     required this.email,
     required this.phone,
     required this.isProfileComplete,
@@ -27,29 +29,29 @@ class Driver {
       "middleName": middleName,
       "lastName": lastName,
       "birthDate": birthDate,
+      "photoUrl": photoUrl,
       "email": email,
       "phone": phone,
       "isProfileComplete": isProfileComplete,
     };
   }
 
-  // Create fromJson method
-  factory Driver.fromJson(Map<String, dynamic> json) {
+  factory Driver.fromJson(Map<String, dynamic> json, String uid) {
     return Driver(
-      id: json["id"],
+      id: uid,
       firstName: json["firstName"] ?? "",
       middleName: json["middleName"] ?? "",
       lastName: json["lastName"] ?? "",
       birthDate: json["birthDate"],
       email: json["email"],
+      photoUrl: json["photoUrl"] ?? "",
       phone: json["phone"] ?? "",
       isProfileComplete: json["isProfileComplete"],
     );
   }
 
-  // Create toString method
   @override
   String toString() {
-    return "Driver(id: $id, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, password: )";
+    return "Driver(id: $id, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, isProfileComplete: $isProfileComplete, photoUrl: $photoUrl)";
   }
 }

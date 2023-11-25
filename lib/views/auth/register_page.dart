@@ -22,7 +22,8 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
       final password = _passwordController.text;
-      final authService = Provider.of<AuthService>(context, listen: false);
+      final authService = AuthService.instance;
+
       try {
         final user = await authService.createUserWithEmailAndPassword(
           email: email,
@@ -38,9 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
           birthDate: Timestamp.now(),
         );
 
-        await DriverDatabase.instance.addDriver(driver, user!.uid).then(
-            (value) => Provider.of<DriverProvider>(context, listen: false)
-                .updateDriver(driver));
+        await DriverDatabase.instance.addDriver(driver, user!.uid);
       } on FirebaseException catch (e) {
         if (e.code == "email-already-in-use") {
           setState(() {

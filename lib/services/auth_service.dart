@@ -3,8 +3,13 @@ import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
 
 class AuthService {
-  final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  const AuthService._();
+
+  static const AuthService _instance = AuthService._();
+  static AuthService get instance => _instance;
+
+  static final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
+  static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   User? get currentuser => _firebaseAuth.currentUser;
 
@@ -25,6 +30,7 @@ class AuthService {
 
     Driver driver = Driver.fromJson(
       result.docs.first.data(),
+      result.docs.first.id,
     );
 
     return driver;
@@ -47,7 +53,7 @@ class AuthService {
     return userCredential.user;
   }
 
-  Future<User?>   createUserWithEmailAndPassword({
+  Future<User?> createUserWithEmailAndPassword({
     required String email,
     required String password,
   }) async {

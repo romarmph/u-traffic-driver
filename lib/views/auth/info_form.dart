@@ -56,8 +56,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
       return;
     }
 
-    final authProvider = Provider.of<AuthService>(context, listen: false);
-    final driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    final authProvider = AuthService.instance;
 
     final Driver driver = Driver(
       firstName: _firstNameController.text,
@@ -72,8 +71,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
     await FirebaseFirestore.instance
         .collection(collectionPath)
         .doc(authProvider.currentuser!.uid)
-        .set(driver.toJson())
-        .then((value) => driverProvider.updateDriver(driver));
+        .set(driver.toJson());
   }
 
   @override
@@ -91,7 +89,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      AuthService().signOut();
+      AuthService.instance.signOut();
     }
   }
 

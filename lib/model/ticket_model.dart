@@ -1,163 +1,194 @@
-import 'package:u_traffic_driver/config/enums/ticket_status.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 
 class Ticket {
   String? id;
   int? ticketNumber;
-  Timestamp? dateCreated;
-  final String licenseNumber;
-  final String firstName;
-  final String middleName;
-  final String lastName;
-  final String phone;
-  final String email;
-  final String address;
-  final String vehicleType;
-  final String engineNumber;
-  final String chassisNumber;
-  final String plateNumber;
-  final String vehicleOwner;
-  final String vehicleOwnerAddress;
-  final String enforcerId;
-  final String driverSignature;
+  final String? licenseNumber;
+  final String? driverName;
+  final String? phone;
+  final String? email;
+  final String? address;
+  final String vehicleTypeID;
+  final String vehicleTypeName;
+  final String? engineNumber;
+  final String? chassisNumber;
+  final String? plateNumber;
+  final String? conductionOrFileNumber;
+  final String? vehicleOwner;
+  final String? vehicleOwnerAddress;
+  final String enforcerID;
+  final String enforcerName;
+  final double totalFine;
+  final Timestamp? birthDate;
+  final Timestamp dateCreated;
+  final Timestamp ticketDueDate;
   final Timestamp violationDateTime;
-  final Timestamp birthDate;
-  final Map<String, dynamic> placeOfViolation;
-  final List<dynamic> violationsID;
+  final List<IssuedViolation> issuedViolations;
+  final ULocation violationPlace;
   final TicketStatus status;
 
   Ticket({
     this.id,
     this.ticketNumber,
-    this.dateCreated,
-    required this.violationsID,
     required this.licenseNumber,
-    required this.firstName,
-    required this.middleName,
-    required this.lastName,
-    required this.birthDate,
+    required this.driverName,
     required this.phone,
     required this.email,
     required this.address,
-    required this.status,
-    required this.vehicleType,
+    required this.vehicleTypeID,
+    required this.vehicleTypeName,
     required this.engineNumber,
+    required this.conductionOrFileNumber,
     required this.chassisNumber,
     required this.plateNumber,
     required this.vehicleOwner,
     required this.vehicleOwnerAddress,
-    required this.placeOfViolation,
+    required this.enforcerID,
+    required this.enforcerName,
+    required this.status,
+    required this.birthDate,
+    required this.dateCreated,
+    required this.ticketDueDate,
     required this.violationDateTime,
-    required this.enforcerId,
-    required this.driverSignature,
+    required this.violationPlace,
+    required this.issuedViolations,
+    required this.totalFine,
   });
 
-  factory Ticket.fromJson(Map<String, dynamic> json) {
+  factory Ticket.fromJson(Map<String, dynamic> json, [String? id]) {
     return Ticket(
-      id: json['id'],
+      id: id,
       ticketNumber: json['ticketNumber'],
-      dateCreated: json['dateCreated'],
-      violationsID: json['violationsID'],
       licenseNumber: json['licenseNumber'],
-      firstName: json['firstName'],
-      middleName: json['middleName'],
-      lastName: json['lastName'],
-      birthDate: json['birthDate'],
+      driverName: json['driverName'],
       phone: json['phone'],
       email: json['email'],
       address: json['address'],
-      status: json['status'],
-      vehicleType: json['vehicleType'],
+      vehicleTypeID: json['vehicleTypeID'],
+      vehicleTypeName: json['vehicleTypeName'],
       engineNumber: json['engineNumber'],
+      conductionOrFileNumber: json['conductionOrFileNumber'],
       chassisNumber: json['chassisNumber'],
       plateNumber: json['plateNumber'],
       vehicleOwner: json['vehicleOwner'],
       vehicleOwnerAddress: json['vehicleOwnerAddress'],
-      placeOfViolation: json['placeOfViolation'],
+      enforcerID: json['enforcerID'],
+      enforcerName: json['enforcerName'],
+      status: TicketStatus.values.firstWhere(
+        (e) => e.toString() == 'TicketStatus.${json['status']}',
+      ),
+      birthDate: json['birthDate'],
+      dateCreated: json['dateCreated'],
+      ticketDueDate: json['ticketDueDate'],
       violationDateTime: json['violationDateTime'],
-      enforcerId: json['enforcerId'],
-      driverSignature: json['driverSignature'],
+      violationPlace: ULocation.fromJson(json['violationPlace']),
+      issuedViolations: (json['issuedViolations'] as List<dynamic>)
+          .map((e) => IssuedViolation.fromJson(e))
+          .toList(),
+      totalFine: json['totalFine'].toDouble(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'ticketNumber': ticketNumber,
-      'dateCreated': dateCreated,
-      'violationsID': violationsID,
       'licenseNumber': licenseNumber,
-      'firstName': firstName,
-      'middleName': middleName,
-      'lastName': lastName,
-      'birthDate': birthDate,
+      'driverName': driverName,
       'phone': phone,
       'email': email,
       'address': address,
-      'status': status,
-      'vehicleType': vehicleType,
+      'vehicleTypeID': vehicleTypeID,
+      'vehicleTypeName': vehicleTypeName,
       'engineNumber': engineNumber,
+      'conductionOrFileNumber': conductionOrFileNumber,
       'chassisNumber': chassisNumber,
       'plateNumber': plateNumber,
       'vehicleOwner': vehicleOwner,
       'vehicleOwnerAddress': vehicleOwnerAddress,
-      'placeOfViolation': placeOfViolation,
+      'enforcerID': enforcerID,
+      'enforcerName': enforcerName,
+      'status': status.toString().split('.').last,
+      'birthDate': birthDate,
+      'dateCreated': dateCreated,
+      'ticketDueDate': ticketDueDate,
       'violationDateTime': violationDateTime,
-      'enforcerId': enforcerId,
-      'driverSignature': driverSignature,
+      'violationPlace': violationPlace.toJson(),
+      'issuedViolations': issuedViolations.map((e) => e.toJson()).toList(),
+      'totalFine': totalFine,
     };
   }
 
-  // create copyWith method
+  @override
+  String toString() {
+    return "Ticket: ${toJson().toString()}";
+  }
+
+  dynamic operator [](String key) => toJson()[key];
+
+  Map<String, dynamic> map(Function(String key, dynamic value) f) {
+    Map<String, dynamic> result = {};
+
+    toJson().forEach((key, value) {
+      result.addAll(f(key, value));
+    });
+
+    return result;
+  }
+
   Ticket copyWith({
     String? id,
     int? ticketNumber,
-    Timestamp? dateCreated,
-    List<dynamic>? violationsID,
     String? licenseNumber,
-    String? firstName,
-    String? middleName,
-    String? lastName,
-    Timestamp? birthDate,
+    String? driverName,
     String? phone,
     String? email,
     String? address,
-    TicketStatus? status,
-    String? vehicleType,
+    String? vehicleTypeID,
+    String? vehicleTypeName,
     String? engineNumber,
+    String? conductionOrFileNumber,
     String? chassisNumber,
     String? plateNumber,
     String? vehicleOwner,
     String? vehicleOwnerAddress,
-    Map<String, dynamic>? placeOfViolation,
+    String? enforcerID,
+    String? enforcerName,
+    TicketStatus? status,
+    Timestamp? birthDate,
+    Timestamp? dateCreated,
+    Timestamp? ticketDueDate,
     Timestamp? violationDateTime,
-    String? enforcerId,
-    String? driverSignature,
+    ULocation? violationPlace,
+    List<IssuedViolation>? issuedViolations,
+    double? totalFine,
   }) {
     return Ticket(
       id: id ?? this.id,
       ticketNumber: ticketNumber ?? this.ticketNumber,
-      dateCreated: dateCreated ?? this.dateCreated,
-      violationsID: violationsID ?? this.violationsID,
       licenseNumber: licenseNumber ?? this.licenseNumber,
-      firstName: firstName ?? this.firstName,
-      middleName: middleName ?? this.middleName,
-      lastName: lastName ?? this.lastName,
-      birthDate: birthDate ?? this.birthDate,
+      driverName: driverName ?? this.driverName,
       phone: phone ?? this.phone,
       email: email ?? this.email,
       address: address ?? this.address,
-      status: status ?? this.status,
-      vehicleType: vehicleType ?? this.vehicleType,
+      vehicleTypeID: vehicleTypeID ?? this.vehicleTypeID,
+      vehicleTypeName: vehicleTypeName ?? this.vehicleTypeName,
       engineNumber: engineNumber ?? this.engineNumber,
+      conductionOrFileNumber:
+          conductionOrFileNumber ?? this.conductionOrFileNumber,
       chassisNumber: chassisNumber ?? this.chassisNumber,
       plateNumber: plateNumber ?? this.plateNumber,
       vehicleOwner: vehicleOwner ?? this.vehicleOwner,
       vehicleOwnerAddress: vehicleOwnerAddress ?? this.vehicleOwnerAddress,
-      placeOfViolation: placeOfViolation ?? this.placeOfViolation,
+      enforcerID: enforcerID ?? this.enforcerID,
+      enforcerName: enforcerName ?? this.enforcerName,
+      status: status ?? this.status,
+      birthDate: birthDate ?? this.birthDate,
+      dateCreated: dateCreated ?? this.dateCreated,
+      ticketDueDate: ticketDueDate ?? this.ticketDueDate,
       violationDateTime: violationDateTime ?? this.violationDateTime,
-      enforcerId: enforcerId ?? this.enforcerId,
-      driverSignature: driverSignature ?? this.driverSignature,
+      violationPlace: violationPlace ?? this.violationPlace,
+      issuedViolations: issuedViolations ?? this.issuedViolations,
+      totalFine: totalFine ?? this.totalFine,
     );
   }
 }

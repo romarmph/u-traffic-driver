@@ -29,7 +29,17 @@ class AppDrawer extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Account Settings'),
-              onTap: () => print("settings"),
+              onTap: () {
+                try {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AccountPage(),
+                    ),
+                  );
+                } catch (e) {
+                  print(e);
+                }
+              },
             ),
             TextButton.icon(
               onPressed: logout,
@@ -46,7 +56,7 @@ class AppDrawer extends StatelessWidget {
   }
 
   void logout() {
-    AuthService().signOut();
+    AuthService.instance.signOut();
   }
 }
 
@@ -57,7 +67,7 @@ class LicenseExpantionListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthService>(context, listen: false);
+    final authProvider = AuthService.instance;
 
     return Padding(
       padding: const EdgeInsets.all(USpace.space12),

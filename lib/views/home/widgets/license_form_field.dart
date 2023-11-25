@@ -1,10 +1,4 @@
-import 'package:u_traffic_driver/config/device/device_constraint.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/models.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/views.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
 
 class LicenseFormField extends StatelessWidget {
   const LicenseFormField({

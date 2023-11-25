@@ -204,7 +204,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
     showDialog(
       context: context,
       builder: (context) {
-        final authProvider = Provider.of<AuthService>(context, listen: false);
+        final authProvider = AuthService.instance;
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,

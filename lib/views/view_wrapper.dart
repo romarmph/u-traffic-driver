@@ -17,33 +17,6 @@ class ViewWrapperState extends State<ViewWrapper> {
     const ReportPage(),
   ];
 
-  Future<bool> isProfileComplete() async {
-    final user = Provider.of<AuthService>(
-      context,
-      listen: false,
-    ).currentuser;
-
-    return await DriverDatabase.instance.isProfileComplete(
-      user!.uid,
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await isProfileComplete().then((value) {
-        if (!value) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const CompleteInfoPage(),
-            ),
-          );
-        }
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

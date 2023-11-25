@@ -221,7 +221,7 @@ class _AddNewLicenseViewState extends State<AddNewLicenseView>
       conditions: _conditionsController.text,
       bloodType: _bloodTypeController.text,
       eyesColor: _eyesColorController.text,
-      userID: AuthService().currentuser!.uid,
+      userID: AuthService.instance.currentuser!.uid,
       dateCreated: Timestamp.now(),
     );
 

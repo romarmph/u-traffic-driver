@@ -1,8 +1,5 @@
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
-import 'package:u_traffic_driver/utils/exports/services.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
 import 'package:u_traffic_driver/views/auth/register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,17 +23,13 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
       final password = _passwordController.text;
-      final authService = Provider.of<AuthService>(context, listen: false);
-      final driverProvider =
-          Provider.of<DriverProvider>(context, listen: false);
+      final authService = AuthService.instance;
+
       try {
         await authService.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
-        await DriverDatabase.instance
-            .getCurrentDriver(authService.currentuser!.uid)
-            .then((value) => driverProvider.updateDriver(value));
       } on FirebaseException catch (e) {
         if (e.code == "wrong-password") {
           setState(() {
@@ -171,76 +164,30 @@ class _LoginPageState extends State<LoginPage> {
                         return _passwordError;
                       },
                     ),
-                    // const SizedBox(height: USpace.space12),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.end,
-                    //   children: [
-                    //     TextButton(
-                    //       onPressed: () {
-                    //         // Implement your "Forgot Password" functionality
-                    //       },
-                    //       child: Text(
-                    //         'Forgot Password?',
-                    //         style:
-                    //             const UTextStyle().textbasefontmedium.copyWith(
-                    //                   color: UColors.blue700,
-                    //                 ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                     const SizedBox(height: USpace.space12),
                     ElevatedButton(
-                        onPressed: () async {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          await loginBtnPressed();
-                          setState(() {
-                            isLoading = false;
-                          });
-                        },
-                        child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: UColors.white,
-                              )
-                            : Text(
-                                'Login',
-                                style: const UTextStyle()
-                                    .textbasefontmedium
-                                    .copyWith(
-                                      color: UColors.white,
-                                    ),
-                              )),
-                    // const SizedBox(height: USpace.space24),
-                    // const Text(
-                    //   'Or Login With',
-                    //   textAlign: TextAlign.center,
-                    // ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    //     Container(
-                    //       width: 120,
-                    //       padding: const EdgeInsets.symmetric(vertical: 20),
-                    //       child: SignInButton(
-                    //         Buttons.google,
-                    //         onPressed: () {},
-                    //         text: 'Google',
-                    //       ),
-                    //     ),
-                    //     const SizedBox(width: USpace.space8),
-                    //     Container(
-                    //       width: 120,
-                    //       padding: const EdgeInsets.symmetric(vertical: 20),
-                    //       child: SignInButton(
-                    //         Buttons.facebook,
-                    //         onPressed: () {},
-                    //         text: 'Facebook',
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                      onPressed: () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        await loginBtnPressed();
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      child: isLoading
+                          ? const CircularProgressIndicator(
+                              color: UColors.white,
+                            )
+                          : Text(
+                              'Login',
+                              style: const UTextStyle()
+                                  .textbasefontmedium
+                                  .copyWith(
+                                    color: UColors.white,
+                                  ),
+                            ),
+                    ),
                     const SizedBox(width: USpace.space8),
                     TextButton(
                       onPressed: () {
