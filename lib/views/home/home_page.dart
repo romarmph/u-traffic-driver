@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:u_traffic_driver/riverpod/license.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final authProvider = AuthService.instance;
 
     return Scaffold(
@@ -39,46 +40,29 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('licenses')
-                  .where('userID', isEqualTo: authProvider.currentuser!.uid)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+            ref.watch(getAllDriversLicense).when(
+                  data: (data) {
+                    print(data);
+                    final List<Widget> carouselItems = data
+                        .map((detail) => LicenseCard(
+                              licenseDetails: detail,
+                            ))
+                        .toList();
 
-                if (snapshot.hasError) {
-                  return const Center(
+                    return FlutterCarousel(
+                      items: carouselItems,
+                      options: CarouselOptions(
+                        aspectRatio: 3.2 / 2,
+                      ),
+                    );
+                  },
+                  error: (error, stackTrace) => const Center(
                     child: Text('Something went wrong'),
-                  );
-                }
-
-                if (snapshot.data!.docs.isEmpty) {
-                  return const Center(
-                    child: LicenseAddButton(),
-                  );
-                }
-
-                final List<Widget> carouselItems = snapshot.data!.docs
-                    .map((e) => LicenseCard(
-                          licenseDetails: LicenseDetails.fromJson(
-                            e.data() as Map<String, dynamic>,
-                          ),
-                        ))
-                    .toList();
-
-                return FlutterCarousel(
-                  items: carouselItems,
-                  options: CarouselOptions(
-                    aspectRatio: 3.2 / 2,
                   ),
-                );
-              },
-            ),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             const SizedBox(
               height: USpace.space14,
             ),
