@@ -31,6 +31,13 @@ class _LoginPageState extends State<LoginPage> {
           password: password,
         );
       } on FirebaseException catch (e) {
+        if (e.code.contains('too-many-requests')) {
+          setState(() {
+            _emailError = "Too many requests. Try again later";
+            _formKey.currentState!.validate();
+          });
+        }
+
         if (e.code == "wrong-password") {
           setState(() {
             _passwordError = "Incorrect password";

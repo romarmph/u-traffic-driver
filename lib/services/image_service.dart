@@ -20,4 +20,15 @@ class ImageService {
     final String url = await taskSnapshot.ref.getDownloadURL();
     return url;
   }
+
+  Future<String?> uploadLicense(File imageFile, String licenseNumber) async {
+    final String type = basename(imageFile.path).split('.').last;
+    final String dateCreated = DateTime.now().millisecondsSinceEpoch.toString();
+    final String fileName = '$licenseNumber-$dateCreated.$type';
+    final Reference ref = _storage.ref('license-images/').child(fileName);
+    final UploadTask uploadTask = ref.putFile(imageFile);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    final String url = await taskSnapshot.ref.getDownloadURL();
+    return url;
+  }
 }

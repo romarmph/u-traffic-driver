@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:u_traffic_driver/riverpod/auth.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 
 class LoginErrorPage extends ConsumerWidget {
@@ -8,41 +7,44 @@ class LoginErrorPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.error_rounded,
-            color: UColors.red400,
-            size: 42,
-          ),
-          const Text(
-            "Error while trying to login!",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_rounded,
+              color: UColors.red400,
+              size: 42,
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text(
-            "Try again later.",
-            style: TextStyle(
-              fontSize: 16,
+            const Text(
+              "Error while trying to login!",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(authServiceProvider).signOut();
-            },
-            child: const Text("Okay"),
-          ),
-        ],
+            const SizedBox(
+              height: 20,
+            ),
+            const Text(
+              "Try again later.",
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                ref.read(authServiceProvider).signOut();
+              },
+              child: const Text("Okay"),
+            ),
+          ],
+        ),
       ),
     );
   }

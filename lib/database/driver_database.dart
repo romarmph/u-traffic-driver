@@ -10,14 +10,16 @@ class DriverDatabase {
 
   Stream<Driver> getDriverByIdStream(String id) {
     final db = FirebaseFirestore.instance;
-    return db
-        .collection('drivers')
-        .doc(id)
-        .snapshots()
-        .map((doc) => Driver.fromJson(
-              doc.data()!,
-              doc.id,
-            ));
+    try {
+      return db.collection('drivers').doc(id).snapshots().map((doc) {
+        return Driver.fromJson(
+          doc.data()!,
+          doc.id,
+        );
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<Driver> getCurrentDriver(String uid) async {

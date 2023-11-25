@@ -73,12 +73,10 @@ class LicenseParser {
           if (fields.containsKey(key.toLowerCase())) {
             if (key.toLowerCase() == 'expirationdate') {
               mockupFields[key] =
-                  fields[key.toLowerCase()].toString().getTimeStamp ??
-                      Timestamp.now();
+                  fields[key.toLowerCase()].toString().getTimeStamp;
             } else if (key == 'birthdate') {
               mockupFields[key] =
-                  fields[key.toLowerCase()].toString().getTimeStamp ??
-                      Timestamp.now();
+                  fields[key.toLowerCase()].toString().getTimeStamp;
             } else if (key == 'height') {
               mockupFields[key] =
                   double.tryParse(fields[key.toLowerCase()]) ?? 0.0;
@@ -91,7 +89,7 @@ class LicenseParser {
           }
         });
 
-        mockupFields['firstName'] = fields['fullname'];
+        mockupFields['driverName'] = fields['fullname'];
 
         return LicenseDetails.fromJson(mockupFields);
       }

@@ -95,7 +95,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           "Driver Name",
                         ),
                         _detailCard(
-                          widget.licenseDetails.birthdate
+                          widget.licenseDetails.birthdate!
                               .toDate()
                               .toAmericanDate,
                           "Nationality",
@@ -159,7 +159,7 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
                           "License Number",
                         ),
                         _detailCard(
-                          widget.licenseDetails.expirationDate
+                          widget.licenseDetails.expirationDate!
                               .toDate()
                               .toAmericanDate,
                           "Expiration Date",

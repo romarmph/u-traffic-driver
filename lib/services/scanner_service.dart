@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 
 class ScannerService {
@@ -7,7 +9,7 @@ class ScannerService {
 
   static ScannerService get instance => _instance;
 
-  Future<String?> getImageFromCamera() async {
+  Future<String?> detectImageFromCamera() async {
     bool isCameraGranted = await Permission.camera.request().isGranted;
     if (!isCameraGranted) {
       isCameraGranted =
@@ -42,5 +44,37 @@ class ScannerService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<String?> takeImageFromCamera() async {
+    final picker = ImagePicker();
+
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 75,
+    );
+
+    if (pickedFile == null) {
+      return null;
+    }
+
+    final cropped = await ImageCropper.platform.cropImage(
+      sourcePath: pickedFile.path,
+      aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 10),
+      compressQuality: 75,
+      compressFormat: ImageCompressFormat.jpg,
+      cropStyle: CropStyle.rectangle,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+        )
+      ],
+    );
+
+    if (cropped == null) {
+      return null;
+    }
+
+    return cropped.path;
   }
 }

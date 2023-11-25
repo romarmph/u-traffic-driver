@@ -85,23 +85,22 @@ class HomePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 24),
               child: Text(
-                'Unsettled Tickets',
+                'Unpaid Tickets',
                 style: const UTextStyle().textsmfontmedium.copyWith(
                       color: UColors.gray500,
                     ),
               ),
             ),
-            // const UnsettledViolationsBuilder(),
+            // const UnpaidTicketsBuilder(),
           ],
         ),
       ),
-      // bottomNavigationBar: bottomNav(),
     );
   }
 }
 
-// class UnsettledViolationsBuilder extends StatelessWidget {
-//   const UnsettledViolationsBuilder({
+// class UnpaidTicketsBuilder extends StatelessWidget {
+//   const UnpaidTicketsBuilder({
 //     super.key,
 //   });
 

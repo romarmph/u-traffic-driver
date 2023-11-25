@@ -50,4 +50,14 @@ extension StringExtension on String {
       rethrow;
     }
   }
+
+  DateTime? get tryParseToDateTime {
+    try {
+      DateFormat format = DateFormat.yMMMMd('en_US');
+
+      return format.parse(this);
+    } catch (e) {
+      return null;
+    }
+  }
 }

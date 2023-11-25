@@ -10,4 +10,6 @@ extension DateTimeExtension on DateTime {
   String get dueDate {
     return add(const Duration(days: 7)).toISO8601Date;
   }
+
+  Timestamp get toTimestamp => Timestamp.fromDate(this);
 }
