@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -38,45 +39,77 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         widget.currentDriver.birthDate.toDate().toAmericanDate;
     _firstNameController.addListener(() {
       setState(() {
-        _didSometincChange = _firstNameController.text !=
-            ref.watch(driverAccountProvider)!.firstName;
+        _didSometincChange =
+            _firstNameController.text != widget.currentDriver.firstName;
       });
     });
 
     _middleNameController.addListener(() {
       setState(() {
-        _didSometincChange = _middleNameController.text !=
-            ref.watch(driverAccountProvider)!.middleName;
+        _didSometincChange =
+            _middleNameController.text != widget.currentDriver.middleName;
       });
     });
 
     _lastNameController.addListener(() {
       setState(() {
-        _didSometincChange = _lastNameController.text !=
-            ref.watch(driverAccountProvider)!.lastName;
+        _didSometincChange =
+            _lastNameController.text != widget.currentDriver.lastName;
       });
     });
 
     _emailController.addListener(() {
       setState(() {
         _didSometincChange =
-            _emailController.text != ref.watch(driverAccountProvider)!.email;
+            _emailController.text != widget.currentDriver.email;
       });
     });
 
     _phoneController.addListener(() {
       setState(() {
         _didSometincChange =
-            _phoneController.text != ref.watch(driverAccountProvider)!.phone;
+            _phoneController.text != widget.currentDriver.phone;
       });
     });
 
     _birthdateController.addListener(() {
       setState(() {
         _didSometincChange = _birthdateController.text !=
-            ref.watch(driverAccountProvider)!.birthDate.toDate().toAmericanDate;
+            widget.currentDriver.birthDate.toDate().toAmericanDate;
       });
     });
+  }
+
+  void _saveChanges() async {
+    final db = DriverDatabase.instance;
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final driver = widget.currentDriver.copyWith(
+      firstName: _firstNameController.text,
+      middleName: _middleNameController.text,
+      lastName: _lastNameController.text,
+      email: _emailController.text,
+      phone: _phoneController.text,
+      birthDate: _newBirthdate ?? widget.currentDriver.birthDate,
+    );
+
+    QuickAlert.show(
+      context: context,
+      type: QuickAlertType.loading,
+      title: 'Saving changes',
+    );
+
+    await db.updateDriver(driver, widget.currentDriver.id!);
+    Navigator.of(navigatorKey.currentContext!).pop();
+
+    await QuickAlert.show(
+      context: navigatorKey.currentContext!,
+      type: QuickAlertType.success,
+      title: 'Changes saved',
+    );
   }
 
   @override
@@ -123,7 +156,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           Visibility(
             visible: _didSometincChange,
             child: FilledButton(
-              onPressed: () {},
+              onPressed: _saveChanges,
               child: const Text('Save'),
             ),
           ),
@@ -212,7 +245,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'Please enter your birthday';
                       }
                       return null;
                     },

@@ -29,7 +29,11 @@ class AccountPage extends ConsumerWidget {
             title: const Text('Password'),
             subtitle: const Text('Update your password'),
             leading: const Icon(Icons.person),
-            onTap: () {},
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const UpdatePasswordPage(),
+              ),
+            ),
           ),
         ],
       ),

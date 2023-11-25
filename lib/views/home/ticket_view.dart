@@ -5,7 +5,6 @@ import 'package:u_traffic_driver/utils/exports/extensions.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
 import 'package:u_traffic_driver/utils/exports/views.dart';
-import 'package:u_traffic_driver/utils/exports/packages.dart';
 
 class TicketView extends StatefulWidget {
   const TicketView({super.key, required this.ticket});

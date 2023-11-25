@@ -134,12 +134,19 @@ class ProfilePhoto extends ConsumerWidget {
 
     if (image != null) {
       try {
+        QuickAlert.show(
+          context: navigatorKey.currentContext!,
+          type: QuickAlertType.loading,
+          title: 'Uploading',
+          text: 'Please wait...',
+        );
         final url = await ImageService.instance.uploadImage(
           File(image.path),
           uid,
         );
         await DriverDatabase.instance.updateDriverPhotoUrl(uid, url);
-        QuickAlert.show(
+        Navigator.of(navigatorKey.currentContext!).pop();
+        await QuickAlert.show(
           context: navigatorKey.currentContext!,
           type: QuickAlertType.success,
           title: 'Success',

@@ -48,6 +48,11 @@ class DriverDatabase {
     return driver.isProfileComplete;
   }
 
+  Future<void> updateDriver(Driver driver, String uid) async {
+    final db = FirebaseFirestore.instance;
+    await db.collection('drivers').doc(uid).update(driver.toJson());
+  }
+
   Future<void> updateDriverPhotoUrl(String uid, String photoUrl) async {
     final db = FirebaseFirestore.instance;
     await db.collection('drivers').doc(uid).update({

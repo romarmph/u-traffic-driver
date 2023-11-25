@@ -16,3 +16,4 @@ export 'package:u_traffic_driver/views/auth/login_error_page.dart';
 export 'package:u_traffic_driver/views/account/account_page.dart';
 export 'package:u_traffic_driver/views/account/profile_page.dart';
 export 'package:u_traffic_driver/views/account/widgets/profile_photo.dart';
+export 'package:u_traffic_driver/views/account/password_page.dart';

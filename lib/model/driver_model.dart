@@ -50,6 +50,30 @@ class Driver {
     );
   }
 
+  Driver copyWith({
+    String? id,
+    String? firstName,
+    String? middleName,
+    String? lastName,
+    Timestamp? birthDate,
+    String? email,
+    String? phone,
+    String? photoUrl,
+    bool? isProfileComplete,
+  }) {
+    return Driver(
+      id: id ?? this.id,
+      firstName: firstName ?? this.firstName,
+      middleName: middleName ?? this.middleName,
+      lastName: lastName ?? this.lastName,
+      birthDate: birthDate ?? this.birthDate,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      photoUrl: photoUrl ?? this.photoUrl,
+      isProfileComplete: isProfileComplete ?? this.isProfileComplete,
+    );
+  }
+
   @override
   String toString() {
     return "Driver(id: $id, firstName: $firstName, middleName: $middleName, lastName: $lastName, birthDate: $birthDate, email: $email, phone: $phone, isProfileComplete: $isProfileComplete, photoUrl: $photoUrl)";

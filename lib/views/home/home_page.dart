@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
-import 'package:u_traffic_driver/utils/navigator.dart';
-import 'package:u_traffic_driver/views/home/widgets/empty_unpaid_violations.dart';
 import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
 
 class HomePage extends StatelessWidget {
