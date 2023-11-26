@@ -1,4 +1,8 @@
 import 'package:u_traffic_driver/config/device/device_constraint.dart';
+import 'package:u_traffic_driver/riverpod/auth.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/complaints.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/driver.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
@@ -7,11 +11,11 @@ import 'package:u_traffic_driver/utils/exports/services.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: Drawer(
         shape: const RoundedRectangleBorder(
@@ -38,7 +42,7 @@ class AppDrawer extends StatelessWidget {
               },
             ),
             TextButton.icon(
-              onPressed: logout,
+              onPressed: () => logout(ref),
               icon: const Icon(Icons.logout),
               label: const Text(
                 'Logout',
@@ -51,7 +55,15 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  void logout() {
+  void logout(WidgetRef ref) {
+    ref.invalidate(driverAccountProvider);
+    ref.invalidate(currentUserProvider);
+    ref.invalidate(driverStreamProvider);
+    ref.invalidate(driverDatabaseProvider);
+    ref.invalidate(getAllComplaintsProvider);
+    ref.invalidate(getAllTickets);
+    ref.invalidate(getAllRepliesProvider);
+
     AuthService.instance.signOut();
   }
 }

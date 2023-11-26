@@ -3,10 +3,14 @@ import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/database/complaints_database.dart';
 import 'package:u_traffic_driver/model/attachment_model.dart';
 import 'package:u_traffic_driver/model/complaint.dart';
+import 'package:u_traffic_driver/riverpod/license.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/services/storage_services.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/views/report/widgets/attach_ticket_card.dart';
+
+final attachedTicketProvider = StateProvider<Ticket?>((ref) => null);
 
 class CreateComplaintPage extends ConsumerStatefulWidget {
   const CreateComplaintPage({super.key});
@@ -20,7 +24,6 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  Ticket? attachedTicket;
   List<File> attachments = [];
 
   void _onSubmit() {
@@ -32,17 +35,24 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   }
 
   void _submitComplaint() async {
+    final attachedTicket = ref.read(attachedTicketProvider);
     final title = _titleController.text;
     final description = _descriptionController.text;
     final senderId = AuthService.instance.currentuser!.uid;
 
-    final complaint = Complaint(
+    Complaint complaint = Complaint(
       title: title,
       description: description,
-      attachedTicket: attachedTicket != null ? attachedTicket!.id! : "",
+      attachedTicket: attachedTicket != null ? attachedTicket.id! : "",
       createdAt: Timestamp.now(),
       sender: senderId,
     );
+
+    if (attachedTicket != null) {
+      complaint = complaint.copyWith(
+        attachedTicket: attachedTicket.id!,
+      );
+    }
 
     try {
       final docid = await ComplaintsDatabase.instance.addComplaint(complaint);
@@ -83,6 +93,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
 
   @override
   Widget build(BuildContext context) {
+    final attachedTicket = ref.watch(attachedTicketProvider);
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -139,13 +150,28 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
                     const Text('Attach Ticket'),
                     const Spacer(),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              contentPadding: const EdgeInsets.all(0),
+                              surfaceTintColor: UColors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              title: const Text('Attach Ticket'),
+                              content: const TicketSelectionList(),
+                            );
+                          },
+                        );
+                      },
                       icon: const Icon(Icons.add_rounded),
                     ),
                   ],
                 ),
                 attachedTicket != null
-                    ? AttachTicketCard(ticket: attachedTicket!)
+                    ? AttachTicketCard(ticket: attachedTicket)
                     : Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -210,6 +236,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   }
 
   bool _didSomethingChange() {
+    final attachedTicket = ref.read(attachedTicketProvider);
     return _titleController.text.isNotEmpty ||
         _descriptionController.text.isNotEmpty ||
         attachedTicket != null ||
@@ -267,5 +294,69 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
     }
 
     return widgets;
+  }
+}
+
+class TicketSelectionList extends ConsumerWidget {
+  const TicketSelectionList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(getAllDriversLicense).when(
+      data: (data) {
+        if (data.isEmpty) {
+          return const Center(
+            child: Text('Add a driver\'s license first'),
+          );
+        }
+
+        return ref.watch(getAllTickets).when(
+          data: (data) {
+            return ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(data[index].ticketNumber!.toString()),
+                  subtitle:
+                      Text(data[index].dateCreated.toDate().toAmericanDate),
+                  trailing: const Icon(Icons.file_copy),
+                  onTap: () {
+                    ref.read(attachedTicketProvider.notifier).state =
+                        data[index];
+                    Navigator.of(context).pop();
+                  },
+                );
+              },
+            );
+          },
+          error: (error, stackTrace) {
+            return Center(
+              child: Text(
+                error.toString(),
+              ),
+            );
+          },
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+      },
+      error: (error, stackTrace) {
+        return Center(
+          child: Text(
+            error.toString(),
+          ),
+        );
+      },
+      loading: () {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 }
