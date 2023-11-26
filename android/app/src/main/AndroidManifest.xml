@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.u_traffic_driver">
    <application
-        android:label="u_traffic_driver"
+        android:label="U-Traffic Driver"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
