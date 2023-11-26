@@ -1,72 +1,9 @@
-import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
+import 'package:flutter/material.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
-import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
-import 'package:u_traffic_driver/views/home/ticket_view.dart';
 
-class HistoryPage extends ConsumerWidget {
-  const HistoryPage({super.key});
-
-  @override
-  Widget build(BuildContext context, ref) {
-    return Scaffold(
-      backgroundColor: UColors.gray50,
-      appBar: AppBar(
-        toolbarHeight: 65,
-        elevation: 0,
-        backgroundColor: UColors.gray50,
-        foregroundColor: UColors.black,
-        title: Text(
-          'Ticket History',
-          style: const UTextStyle().textlgfontbold,
-        ),
-        actions: [
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 10),
-          //   child: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.notifications_outlined,
-          //     ),
-          //   ),
-          // )
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ref.watch(getAllTickets).when(
-                data: (data) {
-                  if (data.isEmpty) {
-                    return const Center(
-                      child: Text('No tickets found'),
-                    );
-                  }
-
-                  return ListView.builder(
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      return HistoryTicketCard(
-                        ticket: data[index],
-                      );
-                    },
-                  );
-                },
-                error: (error, stackTrace) => const Center(
-                  child: Text('Something went wrong'),
-                ),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-        ),
-      ),
-    );
-  }
-}
-
-class HistoryTicketCard extends StatelessWidget {
-  const HistoryTicketCard({
+class AttachTicketCard extends StatelessWidget {
+  const AttachTicketCard({
     super.key,
     required this.ticket,
   });

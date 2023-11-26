@@ -24,15 +24,15 @@ class HomePage extends ConsumerWidget {
               ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.notifications_outlined,
-              ),
-            ),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 10),
+          //   child: IconButton(
+          //     onPressed: () {},
+          //     icon: const Icon(
+          //       Icons.notifications_outlined,
+          //     ),
+          //   ),
+          // )
         ],
       ),
       drawer: const AppDrawer(),

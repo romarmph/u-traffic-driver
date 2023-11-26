@@ -50,4 +50,19 @@ class TicketDatabase {
       rethrow;
     }
   }
+
+  Stream<Ticket> getTicketById(String id) {
+    try {
+      return _db
+          .collection('tickets')
+          .doc(id)
+          .snapshots()
+          .map((snapshot) => Ticket.fromJson(
+                snapshot.data()!,
+                snapshot.id,
+              ));
+    } catch (e) {
+      rethrow;
+    }
+  } 
 }

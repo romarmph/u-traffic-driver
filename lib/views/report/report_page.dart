@@ -1,11 +1,14 @@
+import 'package:u_traffic_driver/riverpod/complaints.riverpod.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
+import 'package:u_traffic_driver/views/report/create_complaint_page.dart';
+import 'package:u_traffic_driver/views/report/widgets/complaint_tile.dart';
 
-class ReportPage extends StatelessWidget {
+class ReportPage extends ConsumerWidget {
   const ReportPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: UColors.gray50,
       appBar: AppBar(
@@ -18,48 +21,84 @@ class ReportPage extends StatelessWidget {
           style: const UTextStyle().textlgfontbold,
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.notifications_outlined,
-              ),
-            ),
-          )
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 10),
+          //   child: IconButton(
+          //     onPressed: () {},
+          //     icon: const Icon(
+          //       Icons.notifications_outlined,
+          //     ),
+          //   ),
+          // )
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 14),
               child: Text(
-                'Messages',
+                'Complaints',
                 style: const UTextStyle()
                     .textsmfontmedium
                     .copyWith(color: UColors.gray500),
               ),
             ),
-            const ListTile(
-              title: Text('Report # 1002'),
-              subtitle: Text('hello sir, we would like to..'),
-              trailing: Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text('yesterday'),
-              ),
-            )
+            Expanded(
+              child: ref.watch(getAllComplaintsProvider).when(
+                    data: (complaints) {
+                      if (complaints.isEmpty) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'No complaints yet',
+                              style: const UTextStyle().textlgfontbold,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'You have not made any complaints yet',
+                              style: const UTextStyle().textsmfontmedium,
+                            ),
+                          ],
+                        );
+                      }
+
+                      return ListView.builder(
+                        itemCount: complaints.length,
+                        itemBuilder: (context, index) {
+                          return ComplaintTile(
+                            complaint: complaints[index],
+                          );
+                        },
+                      );
+                    },
+                    error: (error, stackTrace) => const Center(
+                      child: Text('Error'),
+                    ),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.add),
-          )),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const CreateComplaintPage(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

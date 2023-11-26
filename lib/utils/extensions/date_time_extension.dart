@@ -12,4 +12,22 @@ extension DateTimeExtension on DateTime {
   }
 
   Timestamp get toTimestamp => Timestamp.fromDate(this);
+
+  String get complaintAge {
+    if (DateTime.now().difference(this).inMinutes < 60) {
+      return '${DateTime.now().difference(this).inMinutes} min ago';
+    } else if (DateTime.now().difference(this).inHours < 24) {
+      return '${DateTime.now().difference(this).inHours} hr ago';
+    } else if (DateTime.now().difference(this).inDays == 1) {
+      return 'Yesterday';
+    } else if (DateTime.now().difference(this).inDays < 7) {
+      return '${DateTime.now().difference(this).inDays} days ago';
+    } else if (DateTime.now().difference(this).inDays / 7 < 4) {
+      return '${(DateTime.now().difference(this).inDays / 7).floor()} weeks ago';
+    } else if (DateTime.now().difference(this).inDays / 30 < 12) {
+      return '${(DateTime.now().difference(this).inDays / 30).floor()} months ago';
+    } else {
+      return '${(DateTime.now().difference(this).inDays / 365).floor()} years ago';
+    }
+  }
 }
