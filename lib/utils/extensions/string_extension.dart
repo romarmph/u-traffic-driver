@@ -60,4 +60,12 @@ extension StringExtension on String {
       return null;
     }
   }
+
+  String get initial {
+    try {
+      return split('').first.toUpperCase();
+    } catch (e) {
+      return '';
+    }
+  }
 }

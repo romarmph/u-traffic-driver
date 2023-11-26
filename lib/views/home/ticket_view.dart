@@ -1,29 +1,24 @@
-import 'package:u_traffic_driver/config/enums/ticket_status.dart';
-import 'package:u_traffic_driver/model/issued_violation.dart';
-import 'package:u_traffic_driver/model/ticket_model.dart';
-import 'package:u_traffic_driver/model/violation_model.dart';
-import 'package:u_traffic_driver/utils/exports/extensions.dart';
+import 'package:u_traffic_driver/riverpod/evidence.riverpod.dart';
+import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
-import 'package:u_traffic_driver/utils/exports/themes.dart';
-import 'package:u_traffic_driver/utils/exports/views.dart';
 
-class TicketView extends StatefulWidget {
+class TicketView extends ConsumerStatefulWidget {
   const TicketView({super.key, required this.ticket});
 
   final Ticket ticket;
 
   @override
-  State<TicketView> createState() => _TicketViewState();
+  ConsumerState<TicketView> createState() => _TicketViewState();
 }
 
-class _TicketViewState extends State<TicketView>
+class _TicketViewState extends ConsumerState<TicketView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     _tabController = TabController(
-      length: 4,
+      length: 5,
       vsync: this,
     );
     super.initState();
@@ -51,7 +46,10 @@ class _TicketViewState extends State<TicketView>
                 text: 'Violations',
               ),
               Tab(
-                text: 'Other Detials',
+                text: 'Other Details',
+              ),
+              Tab(
+                text: 'Evidences',
               ),
             ],
           ),
@@ -178,6 +176,73 @@ class _TicketViewState extends State<TicketView>
                       ],
                     ),
                   ),
+                  ref
+                      .watch(getAllEvidencesProvider(
+                    widget.ticket.ticketNumber!,
+                  ))
+                      .when(
+                    data: (evidences) {
+                      return ListView.builder(
+                        itemCount: evidences.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                color: UColors.white,
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: UColors.gray300,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: evidences[index].path,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    evidences[index].name,
+                                    style: const TextStyle(
+                                      color: UColors.gray600,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    evidences[index].description ?? "",
+                                    style: const TextStyle(
+                                      color: UColors.gray600,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    error: (error, stackTrace) {
+                      print(error);
+                      print(stackTrace);
+                      return const Center(
+                        child: Text('Error'),
+                      );
+                    },
+                    loading: () {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -194,7 +259,7 @@ class _TicketViewState extends State<TicketView>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'Total Amount Due',
+                  'Total Fine',
                   style: TextStyle(
                     color: UColors.gray600,
                     fontSize: 20,
@@ -212,9 +277,12 @@ class _TicketViewState extends State<TicketView>
               ],
             ),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Pay Ticket'),
+            Visibility(
+              visible: widget.ticket.status == TicketStatus.paid,
+              child: ElevatedButton(
+                onPressed: () {},
+                child: const Text('View Payment Details'),
+              ),
             ),
           ],
         ),

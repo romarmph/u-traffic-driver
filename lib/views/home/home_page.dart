@@ -74,7 +74,7 @@ class HomePage extends ConsumerWidget {
                     ),
               ),
             ),
-            // const UnpaidTicketsBuilder(),
+            const UnpaidTicketsBuilder(),
           ],
         ),
       ),
@@ -104,7 +104,7 @@ class UnpaidTicketsBuilder extends ConsumerWidget {
                     Ticket ticket = tickets[index];
 
                     return GestureDetector(
-                      onTap: () => goTicketView(context, ticket),
+                      onTap: () => goTicketView(ticket),
                       child: Card(
                         elevation: 0,
                         color: UColors.red500,

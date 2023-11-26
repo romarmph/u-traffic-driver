@@ -26,8 +26,8 @@ void goAddNewLicenseView(BuildContext context) {
   );
 }
 
-void goTicketView(BuildContext context, Ticket ticket) {
-  Navigator.of(context).push(
+void goTicketView(Ticket ticket) {
+  Navigator.of(navigatorKey.currentContext!).push(
     MaterialPageRoute(
       builder: (context) => TicketView(
         ticket: ticket,

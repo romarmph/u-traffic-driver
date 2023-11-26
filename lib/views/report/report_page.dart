@@ -13,10 +13,6 @@ class ReportPage extends StatelessWidget {
         elevation: 0,
         backgroundColor: UColors.gray50,
         foregroundColor: UColors.black,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.arrow_back),
-        ),
         title: Text(
           'Inbox',
           style: const UTextStyle().textlgfontbold,

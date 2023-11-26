@@ -1,6 +1,7 @@
 import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/utils/navigator.dart';
 import 'package:u_traffic_driver/views/home/ticket_view.dart';
 
 class HistoryPage extends ConsumerWidget {
@@ -15,10 +16,6 @@ class HistoryPage extends ConsumerWidget {
         elevation: 0,
         backgroundColor: UColors.gray50,
         foregroundColor: UColors.black,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.arrow_back),
-        ),
         title: Text(
           'Ticket History',
           style: const UTextStyle().textlgfontbold,
@@ -79,63 +76,92 @@ class HistoryTicketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.antiAlias,
+      color: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
       child: Stack(
-        alignment: Alignment.topRight,
         children: [
-          ListTile(
-            title: Text(
-              ticket.ticketNumber.toString(),
-              style: const UTextStyle()
-                  .textbasefontmedium
-                  .copyWith(color: UColors.gray700, fontSize: 16),
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 10,
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Issued by: ${ticket.enforcerName}',
+            child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ListTile(
+                tileColor: UColors.white,
+                onTap: () {
+                  goTicketView(ticket);
+                },
+                dense: true,
+                leading: CircleAvatar(
+                  radius: 14,
+                  child: Text(
+                    ticket.issuedViolations.length.toString(),
+                    style: const UTextStyle()
+                        .textsmfontmedium
+                        .copyWith(color: UColors.gray700),
+                  ),
+                ),
+                title: Text(
+                  ticket.ticketNumber.toString(),
+                  style: const UTextStyle()
+                      .textbasefontmedium
+                      .copyWith(color: UColors.gray700, fontSize: 16),
+                ),
+                subtitle: Text(
+                  'Issued: ${ticket.dateCreated.toDate().toAmericanDate}',
+                  overflow: TextOverflow.ellipsis,
                   style: const UTextStyle()
                       .textsmfontmedium
                       .copyWith(color: UColors.gray500),
                 ),
-                Text(
-                    'Date Issued: ${ticket.dateCreated.toDate().toAmericanDate}',
-                    style: const UTextStyle()
-                        .textsmfontmedium
-                        .copyWith(color: UColors.gray500)),
-              ],
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      'Total Fine',
+                      style: const UTextStyle()
+                          .textsmfontmedium
+                          .copyWith(color: UColors.gray500),
+                    ),
+                    Text(
+                      '₱${getTotalFine(ticket.issuedViolations)}',
+                      style: const UTextStyle()
+                          .textbasefontmedium
+                          .copyWith(color: UColors.gray700),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 50),
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) {
-                        return TicketView(
-                          ticket: ticket,
-                        );
-                      }),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.star,
-                    color: UColors.yellow300,
-                  ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: ticket.status == TicketStatus.paid
+                    ? UColors.green400
+                    : UColors.red400,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                ticket.status == TicketStatus.paid ? 'Paid' : 'Unpaid',
+                style: const TextStyle(
+                  color: UColors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w300,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10, right: 10),
-                child: Text(
-                  getTotalFine(ticket.issuedViolations),
-                  style: const UTextStyle().textbasefontmedium.copyWith(
-                        color: UColors.gray700,
-                      ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),

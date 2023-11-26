@@ -48,22 +48,22 @@ class ViewWrapperState extends State<ViewWrapper> {
         unselectedItemColor: UColors.gray600,
         items: const [
           BottomNavigationBarItem(
+            activeIcon: Icon(Icons.home_rounded),
             icon: Icon(Icons.home_outlined),
             label: "Home",
           ),
           BottomNavigationBarItem(
+            activeIcon: Icon(Icons.calendar_today_rounded),
             icon: Icon(Icons.calendar_today_outlined),
             label: "History",
           ),
           BottomNavigationBarItem(
+            activeIcon: Icon(Icons.inbox_rounded),
             icon: Icon(Icons.inbox_outlined),
-            label: "Report",
+            label: "Complaints",
           ),
         ],
       ),
     );
   }
 }
-
-// Create your HistoryPage, ReportPage, and HomePage widgets as before
-
