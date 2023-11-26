@@ -16,6 +16,7 @@ class WidgetWrapper extends ConsumerWidget {
             if (!driver.isProfileComplete) {
               return const CompleteInfoPage();
             }
+
             return const ViewWrapper();
           },
           error: (error, stackTrace) {

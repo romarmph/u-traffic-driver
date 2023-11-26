@@ -1,8 +1,8 @@
+import 'package:u_traffic_driver/riverpod/license.riverpod.dart';
 import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
-import 'package:u_traffic_driver/views/home/ticket_view.dart';
 
 class HistoryPage extends ConsumerWidget {
   const HistoryPage({super.key});
@@ -35,26 +35,46 @@ class HistoryPage extends ConsumerWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: ref.watch(getAllTickets).when(
+          child: ref.watch(getAllDriversLicense).when(
                 data: (data) {
                   if (data.isEmpty) {
                     return const Center(
-                      child: Text('No tickets found'),
+                      child: Text('Add a license first to your tckets'),
                     );
                   }
 
-                  return ListView.builder(
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      return HistoryTicketCard(
-                        ticket: data[index],
+                  return ref.watch(getAllTickets).when(
+                        data: (data) {
+                          if (data.isEmpty) {
+                            return const Center(
+                              child: Text('No tickets found'),
+                            );
+                          }
+
+                          return ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return HistoryTicketCard(
+                                ticket: data[index],
+                              );
+                            },
+                          );
+                        },
+                        error: (error, stackTrace) {
+                          return const Center(
+                            child: Text('Something went wrong'),
+                          );
+                        },
+                        loading: () => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       );
-                    },
+                },
+                error: (error, stackTrace) {
+                  return const Center(
+                    child: Text('Something went wrong'),
                   );
                 },
-                error: (error, stackTrace) => const Center(
-                  child: Text('Something went wrong'),
-                ),
                 loading: () => const Center(
                   child: CircularProgressIndicator(),
                 ),

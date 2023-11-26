@@ -1,3 +1,4 @@
+import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
@@ -23,9 +24,14 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
 
   final collectionPath = 'drivers';
 
-  void validateInput() {
+  void validateInput() async {
     if (_formKey.currentState!.validate()) {
-      QuickAlert.show(
+      if (!_birthdateController.text.isAgeLegal) {
+        await _showDateInvalidError();
+        return;
+      }
+
+      final result = await QuickAlert.show(
         context: context,
         type: QuickAlertType.confirm,
         text: null,
@@ -33,29 +39,18 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
         confirmBtnText: 'Yes',
         cancelBtnText: 'No',
         onConfirmBtnTap: () async {
-          Navigator.of(context).pop();
-          QuickAlert.show(
-            context: context,
-            type: QuickAlertType.loading,
-            text: 'Saving account...',
-          );
-          try {
-            await saveProfile();
-            await _showProfileSaveSuccess().then((value) => goHome());
-          } catch (e) {
-            await _showSomethingWentWrongError();
-          }
+          Navigator.of(context).pop(true);
         },
       );
+
+      if (result == true) {
+        await _showProfileSaveSuccess();
+        await saveProfile();
+      }
     }
   }
 
   Future<void> saveProfile() async {
-    if (!_birthdateController.text.isAgeLegal) {
-      await _showDateInvalidError();
-      return;
-    }
-
     final authProvider = AuthService.instance;
 
     final Driver driver = Driver(
@@ -152,16 +147,6 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       ),
                       const SizedBox(height: USpace.space12),
                       TextFormField(
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a Middle Name';
-                          }
-                          if (value.isEmpty ||
-                              !RegExp(r'^[a-z A-Z]+$').hasMatch(value)) {
-                            return 'Pleaser enter a valid middle name';
-                          }
-                          return null;
-                        },
                         controller: _middleNameController,
                         decoration: const InputDecoration(
                           labelText: 'Middle Name',
@@ -216,10 +201,7 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
                       const SizedBox(height: USpace.space12),
                       TextFormField(
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a Phone Number';
-                          }
-                          if (value.isEmpty ||
+                          if (value!.isNotEmpty &&
                               !RegExp(r'^(?:[+0]9)?[0-9]{11}$')
                                   .hasMatch(value)) {
                             return 'Pleaser enter a valid Phone Number';

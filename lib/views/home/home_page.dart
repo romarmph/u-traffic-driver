@@ -4,6 +4,7 @@ import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
 import 'package:u_traffic_driver/views/home/widgets/empty_unpaid_violations.dart';
+import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -42,6 +43,10 @@ class HomePage extends ConsumerWidget {
           children: [
             ref.watch(getAllDriversLicense).when(
                   data: (data) {
+                    if (data.isEmpty) {
+                      return const LicenseAddButton();
+                    }
+
                     final List<Widget> carouselItems = data
                         .map((detail) => LicenseCard(
                               licenseDetails: detail,
@@ -89,114 +94,141 @@ class UnpaidTicketsBuilder extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Expanded(
-      child: ref.watch(getAllUnpaidTickets).when(
-            data: (tickets) {
-              if (tickets.isEmpty) {
-                return const EmptyUnpaidViolationsState();
-              }
+    return ref.watch(getAllDriversLicense).when(
+          data: (data) {
+            if (data.isEmpty) {
+              return const Expanded(
+                child: Center(
+                  child: Text('Please add a license first'),
+                ),
+              );
+            }
 
-              return Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: ListView.builder(
-                  itemCount: tickets.length,
-                  itemBuilder: (context, index) {
-                    Ticket ticket = tickets[index];
+            return Expanded(
+              child: ref.watch(getAllUnpaidTickets).when(
+                    data: (tickets) {
+                      if (tickets.isEmpty) {
+                        return const EmptyUnpaidViolationsState();
+                      }
 
-                    return GestureDetector(
-                      onTap: () => goTicketView(ticket),
-                      child: Card(
-                        elevation: 0,
-                        color: UColors.red500,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: DetailTile(
-                                      detail: ticket.ticketNumber.toString(),
-                                      label: 'Ticket Number',
-                                      labelStyle: const UTextStyle()
-                                          .textbasefontmedium
-                                          .copyWith(
-                                            color: UColors.white,
-                                          ),
-                                    ),
-                                  ),
-                                  const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                      return Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: ListView.builder(
+                          itemCount: tickets.length,
+                          itemBuilder: (context, index) {
+                            Ticket ticket = tickets[index];
+
+                            return GestureDetector(
+                              onTap: () => goTicketView(ticket),
+                              child: Card(
+                                elevation: 0,
+                                color: UColors.red500,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'Tap to view details',
-                                        style: TextStyle(
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: DetailTile(
+                                              detail: ticket.ticketNumber
+                                                  .toString(),
+                                              label: 'Ticket Number',
+                                              labelStyle: const UTextStyle()
+                                                  .textbasefontmedium
+                                                  .copyWith(
+                                                    color: UColors.white,
+                                                  ),
+                                            ),
+                                          ),
+                                          const Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Tap to view details',
+                                                style: TextStyle(
+                                                  color: UColors.white,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 4,
+                                              ),
+                                              Icon(
+                                                Icons.info_outline,
+                                                color: UColors.white,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      DetailTile(
+                                        detail: ticket.licenseNumber ?? "",
+                                        label: 'License Number',
+                                        labelStyle: const TextStyle(
                                           color: UColors.white,
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 4,
-                                      ),
-                                      Icon(
-                                        Icons.info_outline,
-                                        color: UColors.white,
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: DetailTile(
+                                              detail: ticket.dateCreated
+                                                  .toDate()
+                                                  .toISO8601Date,
+                                              label: 'Date Issued',
+                                              labelStyle: const UTextStyle()
+                                                  .textbasefontmedium
+                                                  .copyWith(
+                                                    color: UColors.white,
+                                                  ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: DetailTile(
+                                              detail: ticket.dateCreated
+                                                  .toDate()
+                                                  .dueDate,
+                                              label: 'Due Date',
+                                              labelStyle: const TextStyle(
+                                                color: UColors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                              DetailTile(
-                                detail: ticket.licenseNumber ?? "",
-                                label: 'License Number',
-                                labelStyle: const TextStyle(
-                                  color: UColors.white,
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DetailTile(
-                                      detail: ticket.dateCreated
-                                          .toDate()
-                                          .toISO8601Date,
-                                      label: 'Date Issued',
-                                      labelStyle: const UTextStyle()
-                                          .textbasefontmedium
-                                          .copyWith(
-                                            color: UColors.white,
-                                          ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: DetailTile(
-                                      detail:
-                                          ticket.dateCreated.toDate().dueDate,
-                                      label: 'Due Date',
-                                      labelStyle: const TextStyle(
-                                        color: UColors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-            error: (error, stackTrace) => const Center(
+                      );
+                    },
+                    error: (error, stackTrace) {
+                      return const Center(
+                        child: Text('Something went wrong'),
+                      );
+                    },
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+            );
+          },
+          error: (error, stackTrace) {
+            return const Center(
               child: Text('Something went wrong'),
-            ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
+            );
+          },
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
           ),
-    );
+        );
   }
 }

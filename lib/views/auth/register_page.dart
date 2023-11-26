@@ -1,3 +1,4 @@
+import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 
@@ -40,15 +41,21 @@ class _RegisterPageState extends State<RegisterPage> {
         );
 
         await DriverDatabase.instance.addDriver(driver, user!.uid);
+
+        Navigator.of(navigatorKey.currentContext!).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const WidgetWrapper(),
+          ),
+        );
       } on FirebaseException catch (e) {
-        if (e.code == "email-already-in-use") {
+        if (e.code.contains("email-already-in-use")) {
           setState(() {
             _emailError = "Email already in use";
             _formKey.currentState!.validate();
           });
         }
 
-        if (e.code == "weak-password") {
+        if (e.code.contains("weak-password")) {
           setState(() {
             _passwordError = "Password is too weak";
             _formKey.currentState!.validate();
@@ -56,10 +63,6 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       }
     }
-  }
-
-  void navigateToHome(BuildContext context) {
-    Navigator.pushNamed(context, "/home");
   }
 
   @override
