@@ -58,13 +58,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       });
     });
 
-    _emailController.addListener(() {
-      setState(() {
-        _didSometincChange =
-            _emailController.text != widget.currentDriver.email;
-      });
-    });
-
     _phoneController.addListener(() {
       setState(() {
         _didSometincChange =
@@ -91,7 +84,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       firstName: _firstNameController.text,
       middleName: _middleNameController.text,
       lastName: _lastNameController.text,
-      email: _emailController.text,
       phone: _phoneController.text,
       birthDate: _newBirthdate ?? widget.currentDriver.birthDate,
     );
@@ -140,7 +132,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 _firstNameController.text = widget.currentDriver.firstName;
                 _middleNameController.text = widget.currentDriver.middleName;
                 _lastNameController.text = widget.currentDriver.lastName;
-                _emailController.text = widget.currentDriver.email;
                 _phoneController.text = widget.currentDriver.phone;
                 _birthdateController.text =
                     widget.currentDriver.birthDate.toDate().toAmericanDate;
@@ -254,6 +245,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   const Text('Email'),
                   const SizedBox(height: USpace.space4),
                   TextFormField(
+                    enabled: false,
+                    readOnly: true,
                     controller: _emailController,
                     decoration: const InputDecoration(
                       hintText: 'Email',

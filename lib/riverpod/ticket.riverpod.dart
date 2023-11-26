@@ -17,3 +17,8 @@ final getAllTickets = StreamProvider<List<Ticket>>((ref) {
 
   return TicketDatabase.getInstance.getAllTickets(licenseNumbers);
 });
+
+final getTicketByIdProvider =
+    StreamProvider.autoDispose.family<Ticket, String>((ref, id) {
+  return TicketDatabase.getInstance.getTicketById(id);
+});

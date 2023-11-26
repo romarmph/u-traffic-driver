@@ -20,3 +20,4 @@ export 'package:syncfusion_flutter_barcodes/barcodes.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:firebase_storage/firebase_storage.dart';
+export 'package:expansion_tile_card/expansion_tile_card.dart';
