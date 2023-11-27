@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/database/complaints_database.dart';
@@ -8,12 +9,20 @@ import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/services/storage_services.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/views/report/widgets/attach_file_tile.dart';
 import 'package:u_traffic_driver/views/report/widgets/attach_ticket_card.dart';
 
 final attachedTicketProvider = StateProvider<Ticket?>((ref) => null);
 
 class CreateComplaintPage extends ConsumerStatefulWidget {
-  const CreateComplaintPage({super.key});
+  const CreateComplaintPage({
+    super.key,
+    this.parentThread,
+    this.title,
+  });
+
+  final String? parentThread;
+  final String? title;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -24,7 +33,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  List<File> attachments = [];
+  List<Attachment> attachments = [];
 
   void _onSubmit() {
     if (!_formKey.currentState!.validate()) {
@@ -46,6 +55,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
       attachedTicket: attachedTicket != null ? attachedTicket.id! : "",
       createdAt: Timestamp.now(),
       sender: senderId,
+      parentThread: widget.parentThread,
     );
 
     if (attachedTicket != null) {
@@ -55,6 +65,12 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
     }
 
     try {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.loading,
+        title: 'Submitting',
+        text: 'Please wait while we submit your complaint.',
+      );
       final docid = await ComplaintsDatabase.instance.addComplaint(complaint);
 
       if (attachments.isNotEmpty) {
@@ -69,6 +85,8 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
           docid,
         );
       }
+
+      Navigator.of(navigatorKey.currentContext!).pop();
 
       await QuickAlert.show(
         context: navigatorKey.currentContext!,
@@ -92,6 +110,14 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.title != null) {
+      _titleController.text = widget.title!;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final attachedTicket = ref.watch(attachedTicketProvider);
     return WillPopScope(
@@ -105,13 +131,15 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextFormField(
+                  readOnly: widget.parentThread != null,
+                  enabled: widget.parentThread == null,
                   maxLength: 50,
                   controller: _titleController,
                   decoration: const InputDecoration(
@@ -190,38 +218,76 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
                         ),
                       ),
                 const SizedBox(height: 8),
-                // Row(
-                //   children: [
-                //     const Text('Other Attachments'),
-                //     const Spacer(),
-                //     IconButton(
-                //       onPressed: () {},
-                //       icon: const Icon(Icons.file_upload_outlined),
-                //     ),
-                //   ],
-                // ),
+                Row(
+                  children: [
+                    const Text('Other Attachments'),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () async {
+                        final pickedFiles = await FilePicker.platform.pickFiles(
+                          allowMultiple: true,
+                          type: FileType.custom,
+                          allowedExtensions: [
+                            'jpg',
+                            'jpeg',
+                            'png',
+                            'pdf',
+                            'doc',
+                            'docx',
+                          ],
+                        );
+
+                        if (pickedFiles == null) {
+                          return;
+                        }
+
+                        for (var file in pickedFiles.files) {
+                          if (file.size / 1e+6 > 25) {
+                            await QuickAlert.show(
+                              context: navigatorKey.currentContext!,
+                              type: QuickAlertType.error,
+                              title: 'Error',
+                              text: 'File size must be less than 25MB',
+                            );
+                            return;
+                          }
+
+                          setState(() {
+                            attachments.add(Attachment(
+                              name: file.name,
+                              url: file.path!,
+                              type: file.name.split('.').last,
+                              size: file.size,
+                            ));
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.file_upload_outlined),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
-                // attachments.isNotEmpty
-                //     ? Column(
-                //         children: _buildAttachments(attachments),
-                //       )
-                //     : Container(
-                //         padding: const EdgeInsets.all(16),
-                //         decoration: BoxDecoration(
-                //           color: UColors.gray100,
-                //           border: Border.all(
-                //             color: UColors.gray300,
-                //           ),
-                //           borderRadius: BorderRadius.circular(8),
-                //         ),
-                //         child: const Text(
-                //           'No attachments',
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //             color: UColors.gray400,
-                //           ),
-                //         ),
-                //       ),
+                attachments.isNotEmpty
+                    ? Column(
+                        children: _buildAttachments(attachments),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: UColors.gray100,
+                          border: Border.all(
+                            color: UColors.gray300,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'No attachments',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: UColors.gray400,
+                          ),
+                        ),
+                      ),
               ],
             ),
           ),
@@ -258,39 +324,30 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
         },
       );
 
+      if (shouldPop) {
+        ref.read(attachedTicketProvider.notifier).state = null;
+      }
+
       return shouldPop ?? false;
     }
     return true;
   }
 
-  List<Widget> _buildAttachments(List<File> attachments) {
+  List<Widget> _buildAttachments(List<Attachment> attachments) {
     var widgets = <Widget>[];
 
     for (var attachment in attachments) {
       widgets.add(
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: UColors.gray100,
-            border: Border.all(
-              color: UColors.gray300,
-            ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.attachment_rounded),
-              const SizedBox(width: 8),
-              Text(
-                attachment.path.split('/').last,
-                style: const TextStyle(
-                  color: UColors.gray400,
-                ),
-              ),
-            ],
-          ),
+        AttachFileTile(
+          attachment: attachment,
+          onPressed: () {
+            setState(() {
+              this.attachments.remove(attachment);
+            });
+          },
         ),
       );
+      widgets.add(const SizedBox(height: 8));
     }
 
     return widgets;
@@ -314,21 +371,20 @@ class TicketSelectionList extends ConsumerWidget {
 
         return ref.watch(getAllTickets).when(
           data: (data) {
-            return ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(data[index].ticketNumber!.toString()),
-                  subtitle:
-                      Text(data[index].dateCreated.toDate().toAmericanDate),
-                  trailing: const Icon(Icons.file_copy),
-                  onTap: () {
-                    ref.read(attachedTicketProvider.notifier).state =
-                        data[index];
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
+            return SingleChildScrollView(
+              child: Column(
+                children: data.map((ticket) {
+                  return ListTile(
+                    title: Text(ticket.ticketNumber!.toString()),
+                    subtitle: Text(ticket.dateCreated.toDate().toAmericanDate),
+                    trailing: const Icon(Icons.file_copy),
+                    onTap: () {
+                      ref.read(attachedTicketProvider.notifier).state = ticket;
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }).toList(),
+              ),
             );
           },
           error: (error, stackTrace) {

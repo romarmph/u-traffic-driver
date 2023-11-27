@@ -17,6 +17,7 @@ class ComplaintsDatabase {
         .where('sender', isEqualTo: currentUser)
         .where('isSoftDeleted', isEqualTo: false)
         .where('parentThread', isEqualTo: null)
+        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -40,6 +41,7 @@ class ComplaintsDatabase {
   Stream<List<Complaint>> getAllReplies(String parentThreadId) {
     return _collection
         .where('parentThread', isEqualTo: parentThreadId)
+        .orderBy('createdAt', descending: false)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
