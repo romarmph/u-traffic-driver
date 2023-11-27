@@ -12,18 +12,13 @@ class StorageService {
 
   static final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<Attachment> uploadFile(String complaintId, File file) async {
-    final fileName = basename(file.path);
+  Future<Attachment> uploadFile(String complaintId, Attachment file) async {
+    final fileName = basename(file.url);
     final ref = _storage.ref('attachments/$complaintId').child(fileName);
-    final uploadTask = ref.putFile(file);
+    final uploadTask = ref.putFile(File(file.url));
     final snapshot = await uploadTask.whenComplete(() => null);
     final url = await snapshot.ref.getDownloadURL();
 
-    return Attachment(
-      name: fileName,
-      url: url,
-      type: fileName.split('.').last,
-      size: file.lengthSync(),
-    );
+    return file.copyWith(url: url);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/database/complaints_database.dart';
@@ -13,7 +14,12 @@ import 'package:u_traffic_driver/views/report/widgets/attach_ticket_card.dart';
 final attachedTicketProvider = StateProvider<Ticket?>((ref) => null);
 
 class CreateComplaintPage extends ConsumerStatefulWidget {
-  const CreateComplaintPage({super.key});
+  const CreateComplaintPage({
+    super.key,
+    this.parentThread,
+  });
+
+  final String? parentThread;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -24,7 +30,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  List<File> attachments = [];
+  List<Attachment> attachments = [];
 
   void _onSubmit() {
     if (!_formKey.currentState!.validate()) {
@@ -46,6 +52,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
       attachedTicket: attachedTicket != null ? attachedTicket.id! : "",
       createdAt: Timestamp.now(),
       sender: senderId,
+      parentThread: widget.parentThread,
     );
 
     if (attachedTicket != null) {
@@ -55,6 +62,12 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
     }
 
     try {
+      QuickAlert.show(
+        context: context,
+        type: QuickAlertType.loading,
+        title: 'Submitting',
+        text: 'Please wait while we submit your complaint.',
+      );
       final docid = await ComplaintsDatabase.instance.addComplaint(complaint);
 
       if (attachments.isNotEmpty) {
@@ -69,6 +82,8 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
           docid,
         );
       }
+
+      Navigator.of(navigatorKey.currentContext!).pop();
 
       await QuickAlert.show(
         context: navigatorKey.currentContext!,
@@ -105,7 +120,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
           child: Form(
             key: _formKey,
             child: Column(
@@ -190,38 +205,66 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
                         ),
                       ),
                 const SizedBox(height: 8),
-                // Row(
-                //   children: [
-                //     const Text('Other Attachments'),
-                //     const Spacer(),
-                //     IconButton(
-                //       onPressed: () {},
-                //       icon: const Icon(Icons.file_upload_outlined),
-                //     ),
-                //   ],
-                // ),
+                Row(
+                  children: [
+                    const Text('Other Attachments'),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () async {
+                        final pickedFiles = await FilePicker.platform.pickFiles(
+                          allowMultiple: true,
+                          type: FileType.custom,
+                          allowedExtensions: [
+                            'jpg',
+                            'jpeg',
+                            'png',
+                            'pdf',
+                            'doc',
+                            'docx',
+                          ],
+                        );
+
+                        if (pickedFiles == null) {
+                          return;
+                        }
+
+                        for (var file in pickedFiles.files) {
+                          setState(() {
+                            attachments.add(Attachment(
+                              name: file.name,
+                              url: file.path!,
+                              type: file.name.split('.').last,
+                              size: file.size,
+                            ));
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.file_upload_outlined),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 8),
-                // attachments.isNotEmpty
-                //     ? Column(
-                //         children: _buildAttachments(attachments),
-                //       )
-                //     : Container(
-                //         padding: const EdgeInsets.all(16),
-                //         decoration: BoxDecoration(
-                //           color: UColors.gray100,
-                //           border: Border.all(
-                //             color: UColors.gray300,
-                //           ),
-                //           borderRadius: BorderRadius.circular(8),
-                //         ),
-                //         child: const Text(
-                //           'No attachments',
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //             color: UColors.gray400,
-                //           ),
-                //         ),
-                //       ),
+                attachments.isNotEmpty
+                    ? Column(
+                        children: _buildAttachments(attachments),
+                      )
+                    : Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: UColors.gray100,
+                          border: Border.all(
+                            color: UColors.gray300,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'No attachments',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: UColors.gray400,
+                          ),
+                        ),
+                      ),
               ],
             ),
           ),
@@ -263,34 +306,66 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
     return true;
   }
 
-  List<Widget> _buildAttachments(List<File> attachments) {
+  List<Widget> _buildAttachments(List<Attachment> attachments) {
     var widgets = <Widget>[];
 
     for (var attachment in attachments) {
       widgets.add(
         Container(
-          padding: const EdgeInsets.all(16),
+          clipBehavior: Clip.antiAlias,
+          padding: const EdgeInsets.only(
+            left: 4,
+          ),
           decoration: BoxDecoration(
-            color: UColors.gray100,
+            color: UColors.blue400,
             border: Border.all(
-              color: UColors.gray300,
+              color: UColors.gray200,
             ),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
-            children: [
-              const Icon(Icons.attachment_rounded),
-              const SizedBox(width: 8),
-              Text(
-                attachment.path.split('/').last,
-                style: const TextStyle(
-                  color: UColors.gray400,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: UColors.white,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(6),
+                bottomRight: Radius.circular(6),
+              ),
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.only(
+                left: 12,
+                right: 4,
+              ),
+              visualDensity: VisualDensity.compact,
+              tileColor: UColors.gray100,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              title: Text(
+                attachment.name,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              subtitle: Text(
+                '${(attachment.size / 1e+6).toStringAsFixed(2)} MB',
+              ),
+              minLeadingWidth: 0,
+              trailing: IconButton(
+                onPressed: () {
+                  setState(() {
+                    attachments.remove(attachment);
+                  });
+                },
+                icon: const Icon(
+                  Icons.remove_circle,
+                  color: UColors.red500,
                 ),
               ),
-            ],
+            ),
           ),
         ),
       );
+      widgets.add(const SizedBox(height: 8));
     }
 
     return widgets;
@@ -314,21 +389,20 @@ class TicketSelectionList extends ConsumerWidget {
 
         return ref.watch(getAllTickets).when(
           data: (data) {
-            return ListView.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(data[index].ticketNumber!.toString()),
-                  subtitle:
-                      Text(data[index].dateCreated.toDate().toAmericanDate),
-                  trailing: const Icon(Icons.file_copy),
-                  onTap: () {
-                    ref.read(attachedTicketProvider.notifier).state =
-                        data[index];
-                    Navigator.of(context).pop();
-                  },
-                );
-              },
+            return SingleChildScrollView(
+              child: Column(
+                children: data.map((ticket) {
+                  return ListTile(
+                    title: Text(ticket.ticketNumber!.toString()),
+                    subtitle: Text(ticket.dateCreated.toDate().toAmericanDate),
+                    trailing: const Icon(Icons.file_copy),
+                    onTap: () {
+                      ref.read(attachedTicketProvider.notifier).state = ticket;
+                      Navigator.of(context).pop();
+                    },
+                  );
+                }).toList(),
+              ),
             );
           },
           error: (error, stackTrace) {
