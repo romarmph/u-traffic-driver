@@ -17,7 +17,11 @@ class ComplaintTile extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => ComplainViewPage(complaintId: complaint.id!),
+            builder: (_) => ComplainViewPage(
+              complaintId: complaint.id!,
+              status: complaint.status,
+              parentTitle: complaint.title,
+            ),
           ),
         );
       },

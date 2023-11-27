@@ -20,17 +20,6 @@ class ReportPage extends ConsumerWidget {
           'Inbox',
           style: const UTextStyle().textlgfontbold,
         ),
-        actions: [
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 10),
-          //   child: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.notifications_outlined,
-          //     ),
-          //   ),
-          // )
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -72,6 +61,10 @@ class ReportPage extends ConsumerWidget {
                       return ListView.builder(
                         itemCount: complaints.length,
                         itemBuilder: (context, index) {
+                          if (complaints[index].parentThread != null) {
+                            return const SizedBox.shrink();
+                          }
+
                           return ComplaintTile(
                             complaint: complaints[index],
                           );

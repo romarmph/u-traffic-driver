@@ -9,6 +9,7 @@ import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/services/storage_services.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
+import 'package:u_traffic_driver/views/report/widgets/attach_file_tile.dart';
 import 'package:u_traffic_driver/views/report/widgets/attach_ticket_card.dart';
 
 final attachedTicketProvider = StateProvider<Ticket?>((ref) => null);
@@ -17,9 +18,11 @@ class CreateComplaintPage extends ConsumerStatefulWidget {
   const CreateComplaintPage({
     super.key,
     this.parentThread,
+    this.title,
   });
 
   final String? parentThread;
+  final String? title;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -107,6 +110,14 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.title != null) {
+      _titleController.text = widget.title!;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final attachedTicket = ref.watch(attachedTicketProvider);
     return WillPopScope(
@@ -127,6 +138,8 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextFormField(
+                  readOnly: widget.parentThread != null,
+                  enabled: widget.parentThread == null,
                   maxLength: 50,
                   controller: _titleController,
                   decoration: const InputDecoration(
@@ -229,6 +242,16 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
                         }
 
                         for (var file in pickedFiles.files) {
+                          if (file.size / 1e+6 > 25) {
+                            await QuickAlert.show(
+                              context: navigatorKey.currentContext!,
+                              type: QuickAlertType.error,
+                              title: 'Error',
+                              text: 'File size must be less than 25MB',
+                            );
+                            return;
+                          }
+
                           setState(() {
                             attachments.add(Attachment(
                               name: file.name,
@@ -301,6 +324,10 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
         },
       );
 
+      if (shouldPop) {
+        ref.read(attachedTicketProvider.notifier).state = null;
+      }
+
       return shouldPop ?? false;
     }
     return true;
@@ -311,58 +338,13 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
 
     for (var attachment in attachments) {
       widgets.add(
-        Container(
-          clipBehavior: Clip.antiAlias,
-          padding: const EdgeInsets.only(
-            left: 4,
-          ),
-          decoration: BoxDecoration(
-            color: UColors.blue400,
-            border: Border.all(
-              color: UColors.gray200,
-            ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: UColors.white,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(6),
-                bottomRight: Radius.circular(6),
-              ),
-            ),
-            child: ListTile(
-              contentPadding: const EdgeInsets.only(
-                left: 12,
-                right: 4,
-              ),
-              visualDensity: VisualDensity.compact,
-              tileColor: UColors.gray100,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              title: Text(
-                attachment.name,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-              subtitle: Text(
-                '${(attachment.size / 1e+6).toStringAsFixed(2)} MB',
-              ),
-              minLeadingWidth: 0,
-              trailing: IconButton(
-                onPressed: () {
-                  setState(() {
-                    attachments.remove(attachment);
-                  });
-                },
-                icon: const Icon(
-                  Icons.remove_circle,
-                  color: UColors.red500,
-                ),
-              ),
-            ),
-          ),
+        AttachFileTile(
+          attachment: attachment,
+          onPressed: () {
+            setState(() {
+              this.attachments.remove(attachment);
+            });
+          },
         ),
       );
       widgets.add(const SizedBox(height: 8));
