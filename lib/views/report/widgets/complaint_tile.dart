@@ -51,7 +51,9 @@ class ComplaintTile extends StatelessWidget {
               vertical: 2,
             ),
             decoration: BoxDecoration(
-              color: UColors.green400,
+              color: complaint.status == 'open'
+                  ? UColors.green400
+                  : UColors.blue400,
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
