@@ -56,6 +56,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
       createdAt: Timestamp.now(),
       sender: senderId,
       parentThread: widget.parentThread,
+      isFromDriver: true,
     );
 
     if (attachedTicket != null) {

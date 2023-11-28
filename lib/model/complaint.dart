@@ -138,7 +138,7 @@ class Complaint {
         other.attachedTicket == attachedTicket &&
         other.reopenedAt == reopenedAt &&
         other.reopenedBy == reopenedBy &&
-        other.isSoftDeleted == isSoftDeleted && 
+        other.isSoftDeleted == isSoftDeleted &&
         other.isFromDriver == isFromDriver;
   }
 
