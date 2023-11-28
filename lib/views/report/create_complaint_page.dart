@@ -126,7 +126,7 @@ class _CreateComplaintPageState extends ConsumerState<CreateComplaintPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Create Complaint',
+            '${widget.parentThread != null ? "Reply" : "Create"} Complaint',
             style: const UTextStyle().textlgfontbold,
           ),
         ),
