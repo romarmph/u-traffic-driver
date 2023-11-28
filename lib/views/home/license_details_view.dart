@@ -255,18 +255,18 @@ class _LicenseDetailsViewState extends State<LicenseDetailsView>
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          left: USpace.space12,
-          right: USpace.space12,
-          bottom: USpace.space12,
-        ),
-        child: ElevatedButton.icon(
-          onPressed: showQRCode,
-          label: const Text('Generate QR Code'),
-          icon: const Icon(Icons.qr_code),
-        ),
-      ),
+      // bottomNavigationBar: Padding(
+      //   padding: const EdgeInsets.only(
+      //     left: USpace.space12,
+      //     right: USpace.space12,
+      //     bottom: USpace.space12,
+      //   ),
+      //   child: ElevatedButton.icon(
+      //     onPressed: showQRCode,
+      //     label: const Text('Generate QR Code'),
+      //     icon: const Icon(Icons.qr_code),
+      //   ),
+      // ),
     );
   }
 
