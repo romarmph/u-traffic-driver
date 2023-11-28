@@ -16,6 +16,7 @@ class Complaint {
   final List<Attachment> attachments;
   final String attachedTicket;
   final bool isSoftDeleted;
+  final bool isFromDriver;
 
   Complaint({
     this.id,
@@ -32,6 +33,7 @@ class Complaint {
     this.attachments = const [],
     this.attachedTicket = "",
     this.isSoftDeleted = false,
+    this.isFromDriver = true,
   });
 
   factory Complaint.fromJson(Map<String, dynamic> json, String uid) {
@@ -52,6 +54,7 @@ class Complaint {
           .toList(),
       attachedTicket: json['attachedTicket'],
       isSoftDeleted: json['isSoftDeleted'],
+      isFromDriver: json['isFromDriver'],
     );
   }
 
@@ -71,6 +74,7 @@ class Complaint {
       'attachments': attachments.map((e) => e.toJson()).toList(),
       'attachedTicket': attachedTicket,
       'isSoftDeleted': isSoftDeleted,
+      'isFromDriver': isFromDriver,
     };
   }
 
@@ -90,6 +94,7 @@ class Complaint {
     List<Attachment>? attachments,
     String? attachedTicket,
     bool? isSoftDeleted,
+    bool? isFromDriver,
   }) {
     return Complaint(
       id: id ?? this.id,
@@ -106,12 +111,13 @@ class Complaint {
       reopenedAt: reopenedAt ?? this.reopenedAt,
       reopenedBy: reopenedBy ?? this.reopenedBy,
       isSoftDeleted: isSoftDeleted ?? this.isSoftDeleted,
+      isFromDriver: isFromDriver ?? this.isFromDriver,
     );
   }
 
   @override
   String toString() {
-    return 'Complaint(id: $id, title: $title, description: $description, status: $status, parentThread: $parentThread, createdAt: $createdAt, closedAt: $closedAt, sender: $sender, closedBy: $closedBy, attachments: $attachments, attachedTicket: $attachedTicket, reopenedAt: $reopenedAt, reopenedBy: $reopenedBy, isSoftDeleted: $isSoftDeleted)';
+    return 'Complaint(id: $id, title: $title, description: $description, status: $status, parentThread: $parentThread, createdAt: $createdAt, closedAt: $closedAt, sender: $sender, closedBy: $closedBy, attachments: $attachments, attachedTicket: $attachedTicket, reopenedAt: $reopenedAt, reopenedBy: $reopenedBy, isSoftDeleted: $isSoftDeleted, isFromDriver: $isFromDriver)';
   }
 
   @override
@@ -132,7 +138,8 @@ class Complaint {
         other.attachedTicket == attachedTicket &&
         other.reopenedAt == reopenedAt &&
         other.reopenedBy == reopenedBy &&
-        other.isSoftDeleted == isSoftDeleted;
+        other.isSoftDeleted == isSoftDeleted && 
+        other.isFromDriver == isFromDriver;
   }
 
   @override
@@ -150,6 +157,7 @@ class Complaint {
         attachedTicket.hashCode ^
         reopenedAt.hashCode ^
         reopenedBy.hashCode ^
-        isSoftDeleted.hashCode;
+        isSoftDeleted.hashCode ^
+        isFromDriver.hashCode;
   }
 }
