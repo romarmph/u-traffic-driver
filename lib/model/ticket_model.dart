@@ -26,6 +26,8 @@ class Ticket {
   final List<IssuedViolation> issuedViolations;
   final ULocation violationPlace;
   final TicketStatus status;
+  final String? cancelledBy;
+  final Timestamp? cancelledAt;
 
   Ticket({
     this.id,
@@ -53,6 +55,8 @@ class Ticket {
     required this.violationPlace,
     required this.issuedViolations,
     required this.totalFine,
+    this.cancelledBy,
+    this.cancelledAt,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json, [String? id]) {
@@ -86,6 +90,8 @@ class Ticket {
           .map((e) => IssuedViolation.fromJson(e))
           .toList(),
       totalFine: json['totalFine'].toDouble(),
+      cancelledBy: json['cancelledBy'],
+      cancelledAt: json['cancelledAt'],
     );
   }
 
@@ -115,6 +121,8 @@ class Ticket {
       'violationPlace': violationPlace.toJson(),
       'issuedViolations': issuedViolations.map((e) => e.toJson()).toList(),
       'totalFine': totalFine,
+      'cancelledBy': cancelledBy,
+      'cancelledAt': cancelledAt,
     };
   }
 

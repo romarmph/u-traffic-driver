@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:u_traffic_driver/riverpod/license.riverpod.dart';
 import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
+import 'package:u_traffic_driver/services/notification_service.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
 import 'package:u_traffic_driver/views/home/widgets/empty_unpaid_violations.dart';
@@ -8,6 +9,9 @@ import 'package:u_traffic_driver/views/home/widgets/no_license_state_card.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+  void getToken() async {
+    await NotificationService.instance.initNotications();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,17 +28,6 @@ class HomePage extends ConsumerWidget {
                 color: UColors.blue700,
               ),
         ),
-        actions: [
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 10),
-          //   child: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.notifications_outlined,
-          //     ),
-          //   ),
-          // )
-        ],
       ),
       drawer: const AppDrawer(),
       body: SafeArea(
@@ -105,11 +98,16 @@ class UnpaidTicketsBuilder extends ConsumerWidget {
             }
 
             return Expanded(
-              child: ref.watch(getAllUnpaidTickets).when(
+              child: ref.watch(getAllTickets).when(
                     data: (tickets) {
                       if (tickets.isEmpty) {
                         return const EmptyUnpaidViolationsState();
                       }
+
+                      tickets = tickets
+                          .where((element) =>
+                              element.status == TicketStatus.unpaid)
+                          .toList();
 
                       return Padding(
                         padding: const EdgeInsets.all(12.0),

@@ -231,8 +231,6 @@ class _TicketViewState extends ConsumerState<TicketView>
                       );
                     },
                     error: (error, stackTrace) {
-                      print(error);
-                      print(stackTrace);
                       return const Center(
                         child: Text('Error'),
                       );

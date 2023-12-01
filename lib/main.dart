@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:u_traffic_driver/config/navigator_key.dart';
+import 'package:u_traffic_driver/services/notification_service.dart';
 
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'firebase_options.dart';
@@ -9,6 +10,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService.instance.initNotications();
   runApp(
     const ProviderScope(
       child: UTrafficDriver(),

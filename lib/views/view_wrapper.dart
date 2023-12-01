@@ -18,6 +18,11 @@ class ViewWrapperState extends State<ViewWrapper> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: UColors.white,

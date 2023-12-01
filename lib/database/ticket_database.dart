@@ -10,45 +10,78 @@ class TicketDatabase {
 
   Stream<List<Ticket>> getAllTickets(
     List<String> licenseNumbers,
-  ) {
-    try {
-      return _db
-          .collection('tickets')
-          .where('licenseNumber', whereIn: licenseNumbers)
-          .snapshots()
-          .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          return Ticket.fromJson(
-            doc.data(),
-            doc.id,
-          );
-        }).toList();
-      });
-    } catch (e) {
-      rethrow;
-    }
-  }
+    List<String> plateNumbers,
+    List<String> chassisNumbers,
+    List<String> engineNumbers,
+    List<String> conductionOrFileNumbers,
+  ) async* {
+    final collection = _db.collection('tickets');
+    List<Ticket> allTickets = [];
 
-  Stream<List<Ticket>> getAllUnpaidTickets(
-    List<String> licenseNumbers,
-  ) {
-    try {
-      return _db
-          .collection('tickets')
+    if (licenseNumbers.isNotEmpty) {
+      var querySnapshot = await collection
           .where('licenseNumber', whereIn: licenseNumbers)
-          .where('status', isEqualTo: 'unpaid')
-          .snapshots()
-          .map((snapshot) {
-        return snapshot.docs.map((doc) {
-          return Ticket.fromJson(
-            doc.data(),
-            doc.id,
-          );
-        }).toList();
-      });
-    } catch (e) {
-      rethrow;
+          .get();
+      var tickets = querySnapshot.docs
+          .map((doc) => Ticket.fromJson(
+                doc.data(),
+                doc.id,
+              ))
+          .toList();
+      allTickets.addAll(tickets);
     }
+
+    if (plateNumbers.isNotEmpty) {
+      var querySnapshot =
+          await collection.where('plateNumber', whereIn: plateNumbers).get();
+      var tickets = querySnapshot.docs
+          .map((doc) => Ticket.fromJson(
+                doc.data(),
+                doc.id,
+              ))
+          .toList();
+      allTickets.addAll(tickets);
+    }
+
+    if (chassisNumbers.isNotEmpty) {
+      var querySnapshot = await collection
+          .where('chassisNumber', whereIn: chassisNumbers)
+          .get();
+      var tickets = querySnapshot.docs
+          .map((doc) => Ticket.fromJson(
+                doc.data(),
+                doc.id,
+              ))
+          .toList();
+      allTickets.addAll(tickets);
+    }
+
+    if (engineNumbers.isNotEmpty) {
+      var querySnapshot =
+          await collection.where('engineNumber', whereIn: engineNumbers).get();
+      var tickets = querySnapshot.docs
+          .map((doc) => Ticket.fromJson(
+                doc.data(),
+                doc.id,
+              ))
+          .toList();
+      allTickets.addAll(tickets);
+    }
+
+    if (conductionOrFileNumbers.isNotEmpty) {
+      var querySnapshot = await collection
+          .where('conductionOrFileNumber', whereIn: conductionOrFileNumbers)
+          .get();
+      var tickets = querySnapshot.docs
+          .map((doc) => Ticket.fromJson(
+                doc.data(),
+                doc.id,
+              ))
+          .toList();
+      allTickets.addAll(tickets);
+    }
+
+    yield allTickets;
   }
 
   Stream<Ticket> getTicketById(String id) {
@@ -64,5 +97,5 @@ class TicketDatabase {
     } catch (e) {
       rethrow;
     }
-  } 
+  }
 }

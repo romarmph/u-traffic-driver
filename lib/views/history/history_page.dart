@@ -20,17 +20,6 @@ class HistoryPage extends ConsumerWidget {
           'Ticket History',
           style: const UTextStyle().textlgfontbold,
         ),
-        actions: [
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 10),
-          //   child: IconButton(
-          //     onPressed: () {},
-          //     icon: const Icon(
-          //       Icons.notifications_outlined,
-          //     ),
-          //   ),
-          // )
-        ],
       ),
       body: SafeArea(
         child: Padding(
@@ -61,8 +50,6 @@ class HistoryPage extends ConsumerWidget {
                           );
                         },
                         error: (error, stackTrace) {
-                          print(error);
-                          print(stackTrace);
                           return const Center(
                             child: Text('Something went wrong'),
                           );
@@ -141,11 +128,15 @@ class HistoryTicketCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: ticket.status == TicketStatus.paid
                     ? UColors.green400
-                    : UColors.red400,
+                    : ticket.status == TicketStatus.unpaid
+                        ? UColors.red400
+                        : ticket.status == TicketStatus.expired
+                            ? UColors.indigo400
+                            : UColors.gray500,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                ticket.status == TicketStatus.paid ? 'Paid' : 'Unpaid',
+                ticket.status.name.capitalize,
                 style: const TextStyle(
                   color: UColors.white,
                   fontSize: 10,
