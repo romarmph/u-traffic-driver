@@ -18,6 +18,7 @@ class FcmTokenDatabase {
       return;
     }
 
+    print(token);
     final foundToken = await _api
         .collection('fcm_tokens')
         .where('token', isEqualTo: token)

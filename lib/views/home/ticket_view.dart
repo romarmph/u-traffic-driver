@@ -1,4 +1,6 @@
+import 'package:u_traffic_driver/riverpod/admin.riverpod.dart';
 import 'package:u_traffic_driver/riverpod/evidence.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/payment_detail.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 
@@ -276,12 +278,106 @@ class _TicketViewState extends ConsumerState<TicketView>
             ),
             const SizedBox(height: 12),
             Visibility(
+              visible: TicketStatus.expired == widget.ticket.status,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: UColors.gray100,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(12),
+                  ),
+                ),
+                padding: const EdgeInsets.all(4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Expired',
+                      style: TextStyle(
+                        color: UColors.gray600,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.ticket.ticketDueDate.toDate().dueDate.formatDate,
+                      style: const TextStyle(
+                        color: UColors.gray600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Visibility(
               visible: widget.ticket.status == TicketStatus.paid,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        insetPadding: const EdgeInsets.all(16),
+                        child: PaymentDetailsDialog(
+                          ticketNumber: widget.ticket.ticketNumber!,
+                        ),
+                      );
+                    },
+                  );
+                },
                 child: const Text('View Payment Details'),
               ),
             ),
+            widget.ticket.cancelledBy == null
+                ? const SizedBox.shrink()
+                : Container(
+                    decoration: const BoxDecoration(
+                      color: UColors.gray100,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: ref
+                        .watch(adminProvider(widget.ticket.cancelledBy!))
+                        .when(data: (admin) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 12),
+                          Text(
+                            'Cancelled by ${admin.firstName} ${admin.lastName}',
+                            style: const TextStyle(
+                              color: UColors.gray600,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.ticket.cancelledAt!.toDate().toAmericanDate,
+                            style: const TextStyle(
+                              color: UColors.gray600,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      );
+                    }, error: (error, stackTrace) {
+                      return const Center(
+                        child: Text('Error'),
+                      );
+                    }, loading: () {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }),
+                  ),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -301,6 +397,122 @@ class _TicketViewState extends ConsumerState<TicketView>
     }
 
     return total.toString();
+  }
+
+  Widget _detailCard(String detail, String label) {
+    return Card(
+      elevation: 0,
+      color: UColors.gray100,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(12),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DetailTile(
+          detail: detail,
+          label: label,
+          detailStyle: const UTextStyle().textxlfontsemibold.copyWith(
+                color: UColors.gray700,
+              ),
+          labelStyle: const UTextStyle().textsmfontmedium.copyWith(
+                color: UColors.gray400,
+              ),
+        ),
+      ),
+    );
+  }
+}
+
+class PaymentDetailsDialog extends ConsumerWidget {
+  const PaymentDetailsDialog({
+    super.key,
+    required this.ticketNumber,
+  });
+
+  final int ticketNumber;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: UColors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(12),
+        ),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: ref.watch(getPaymentDetailProvider(ticketNumber)).when(
+        data: (paymentDetail) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Payment Details',
+                  style: TextStyle(
+                    color: UColors.gray600,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _detailCard(
+                  paymentDetail.orNumber,
+                  'OR Number',
+                ),
+                _detailCard(
+                  paymentDetail.ticketNumber.toString(),
+                  'Ticket number',
+                ),
+                _detailCard(
+                  paymentDetail.fineAmount.toString(),
+                  'Fine Amount',
+                ),
+                _detailCard(
+                  paymentDetail.tenderedAmount.toString(),
+                  'Cash Amount',
+                ),
+                _detailCard(
+                  paymentDetail.change.toString(),
+                  'Change',
+                ),
+                _detailCard(
+                  paymentDetail.processedByName,
+                  'Cashier',
+                ),
+                _detailCard(
+                  paymentDetail.processedAt.toDate().toAmericanDate,
+                  'Date Paid',
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        },
+        error: (error, stackTrace) {
+          return const Center(
+            child: Text('Error'),
+          );
+        },
+        loading: () {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
+    );
   }
 
   Widget _detailCard(String detail, String label) {
