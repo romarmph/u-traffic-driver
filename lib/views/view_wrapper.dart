@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:u_traffic_driver/riverpod/complaints.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/driver_vehicle.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 
-class ViewWrapper extends StatefulWidget {
+class ViewWrapper extends ConsumerStatefulWidget {
   const ViewWrapper({Key? key}) : super(key: key);
 
   @override
-  State<ViewWrapper> createState() => ViewWrapperState();
+  ConsumerState<ViewWrapper> createState() => ViewWrapperState();
 }
 
-class ViewWrapperState extends State<ViewWrapper> {
+class ViewWrapperState extends ConsumerState<ViewWrapper> {
   int currentIndex = 0;
+  bool done = false;
 
   final List<Widget> pages = [
     const HomePage(),
