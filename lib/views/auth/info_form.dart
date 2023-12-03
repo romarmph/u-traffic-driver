@@ -1,7 +1,6 @@
 import 'package:u_traffic_driver/config/navigator_key.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
-import 'package:u_traffic_driver/utils/navigator.dart';
 
 class CompleteInfoPage extends StatefulWidget {
   const CompleteInfoPage({super.key});
@@ -67,6 +66,13 @@ class _CompleteInfoPageState extends State<CompleteInfoPage>
         .collection(collectionPath)
         .doc(authProvider.currentuser!.uid)
         .set(driver.toJson());
+
+    Navigator.of(navigatorKey.currentContext!).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => const WidgetWrapper(),
+      ),
+      (route) => false,
+    );
   }
 
   @override

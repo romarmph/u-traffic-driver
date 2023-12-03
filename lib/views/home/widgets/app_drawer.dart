@@ -1,8 +1,6 @@
 import 'package:u_traffic_driver/config/device/device_constraint.dart';
-import 'package:u_traffic_driver/riverpod/auth.riverpod.dart';
-import 'package:u_traffic_driver/riverpod/complaints.riverpod.dart';
-import 'package:u_traffic_driver/riverpod/driver.riverpod.dart';
-import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/driver_vehicle.riverpod.dart';
+import 'package:u_traffic_driver/riverpod/license.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/utils/exports/models.dart';
 import 'package:u_traffic_driver/utils/exports/themes.dart';
@@ -10,6 +8,8 @@ import 'package:u_traffic_driver/utils/exports/views.dart';
 import 'package:u_traffic_driver/utils/exports/services.dart';
 import 'package:u_traffic_driver/utils/exports/packages.dart';
 import 'package:u_traffic_driver/utils/navigator.dart';
+import 'package:u_traffic_driver/views/home/add_new_vehicle_view.dart';
+import 'package:u_traffic_driver/views/home/vehicle_detail_view.dart';
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -28,114 +28,87 @@ class AppDrawer extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const AppDrawerHeader(),
-            const LicenseExpantionListTile(),
-            const Spacer(),
+            const Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    LicenseExpantionListTile(),
+                    DriverVehicleListTile(),
+                  ],
+                ),
+              ),
+            ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Account Settings'),
               onTap: () {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => const AccountPage(),
                   ),
                 );
               },
             ),
-            TextButton.icon(
-              onPressed: () => logout(ref),
-              icon: const Icon(Icons.logout),
-              label: const Text(
-                'Logout',
-                textAlign: TextAlign.start,
-              ),
-            ),
           ],
         ),
       ),
     );
   }
-
-  void logout(WidgetRef ref) {
-    ref.invalidate(driverAccountProvider);
-    ref.invalidate(currentUserProvider);
-    ref.invalidate(driverStreamProvider);
-    ref.invalidate(driverDatabaseProvider);
-    ref.invalidate(getAllComplaintsProvider);
-    ref.invalidate(getAllTickets);
-    ref.invalidate(getAllRepliesProvider);
-
-    AuthService.instance.signOut();
-  }
 }
 
-class LicenseExpantionListTile extends StatelessWidget {
+class LicenseExpantionListTile extends ConsumerWidget {
   const LicenseExpantionListTile({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final authProvider = AuthService.instance;
 
     return Padding(
       padding: const EdgeInsets.all(USpace.space12),
-      child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('licenses')
-            .where(
-              'userID',
-              isEqualTo: authProvider.currentuser!.uid,
-            )
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      child: ref.watch(getAllDriversLicense).when(
+          data: (license) {
+            List<Widget> licenseList = license.map((data) {
+              return ListTile(
+                title: Text(data.licenseNumber),
+                subtitle: Text(data.driverName),
+                onTap: () => goToLicenseDetailView(data, context),
+              );
+            }).toList();
 
-          if (snapshot.hasError) {
+            return ExpansionTile(
+              title: const Text("Licenses"),
+              initiallyExpanded: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(USpace.space8),
+                side: BorderSide.none,
+              ),
+              clipBehavior: Clip.antiAlias,
+              backgroundColor: UColors.blue100,
+              children: [
+                ...licenseList,
+                Container(
+                  color: UColors.blue200,
+                  child: ListTile(
+                    leading: const Icon(Icons.add),
+                    title: const Text("Add License"),
+                    onTap: () {
+                      addNewLicens(licenseList.length, context);
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+          error: (error, stackTrace) {
             return const Center(
               child: Text('Something went wrong'),
             );
-          }
-
-          List<Widget> licenseList = snapshot.data!.docs.map((data) {
-            LicenseDetails licenseDetails = LicenseDetails.fromJson(
-              data.data() as Map<String, dynamic>,
-            );
-            return ListTile(
-              title: Text(licenseDetails.licenseNumber),
-              subtitle: Text(licenseDetails.driverName),
-              onTap: () => goToLicenseDetailView(licenseDetails, context),
-            );
-          }).toList();
-
-          return ExpansionTile(
-            title: const Text("Licenses"),
-            initiallyExpanded: true,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(USpace.space8),
-              side: BorderSide.none,
-            ),
-            clipBehavior: Clip.antiAlias,
-            backgroundColor: UColors.blue100,
-            children: [
-              ...licenseList,
-              Container(
-                color: UColors.blue200,
-                child: ListTile(
-                  leading: const Icon(Icons.add),
-                  title: const Text("Add License"),
-                  onTap: () {
-                    addNewLicens(licenseList.length, context);
-                  },
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+          },
+          loading: () => const Center(
+                child: CircularProgressIndicator(),
+              )),
     );
   }
 
@@ -153,5 +126,80 @@ class LicenseExpantionListTile extends StatelessWidget {
     }
 
     goAddNewLicenseView(context);
+  }
+}
+
+class DriverVehicleListTile extends ConsumerWidget {
+  const DriverVehicleListTile({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.all(USpace.space12),
+      child: ref.watch(driverVehiclesStreamProvider).when(
+            data: (vehicles) {
+              List<Widget> licenseList = vehicles.map((data) {
+                return ListTile(
+                  title: Text(data.brand),
+                  subtitle: Text(data.plateNumber!.isNotEmpty
+                      ? data.plateNumber!
+                      : data.chassisNumber!.isNotEmpty
+                          ? data.chassisNumber!
+                          : data.engineNumber!.isNotEmpty
+                              ? data.engineNumber!
+                              : data.conductionOrFileNumber!.isNotEmpty
+                                  ? data.conductionOrFileNumber!
+                                  : "No Vehicle Number"),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => VehicleDetailView(
+                          vehicle: data,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList();
+
+              return ExpansionTile(
+                title: const Text("Vehicles"),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(USpace.space8),
+                  side: BorderSide.none,
+                ),
+                clipBehavior: Clip.antiAlias,
+                backgroundColor: UColors.blue100,
+                children: [
+                  ...licenseList,
+                  Container(
+                    color: UColors.blue200,
+                    child: ListTile(
+                      leading: const Icon(Icons.add),
+                      title: const Text("Add Vehicle"),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const AddVehicleForm(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+            error: (error, stackTrace) {
+              return const Center(
+                child: Text('Something went wrong'),
+              );
+            },
+            loading: () => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+    );
   }
 }
