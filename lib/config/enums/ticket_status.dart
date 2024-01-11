@@ -6,7 +6,7 @@ enum TicketStatus {
   unpaid,
   cancelled,
   refunded,
-  expired,
+  overdue,
 }
 
 extension TicketStatusExtension on TicketStatus {
@@ -20,7 +20,7 @@ extension TicketStatusExtension on TicketStatus {
         return UColors.gray500;
       case TicketStatus.refunded:
         return UColors.orange500;
-      case TicketStatus.expired:
+      case TicketStatus.overdue:
         return UColors.purple500;
       default:
         return UColors.gray500;
@@ -37,8 +37,8 @@ extension TicketStatusExtension on TicketStatus {
         return 'Cancelled';
       case TicketStatus.refunded:
         return 'Refunded';
-      case TicketStatus.expired:
-        return 'Expired';
+      case TicketStatus.overdue:
+        return 'overdue';
       default:
         return 'Unknown';
     }
