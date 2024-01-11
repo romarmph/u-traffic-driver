@@ -130,7 +130,7 @@ class HistoryTicketCard extends StatelessWidget {
                     ? UColors.green400
                     : ticket.status == TicketStatus.unpaid
                         ? UColors.red400
-                        : ticket.status == TicketStatus.expired
+                        : ticket.status == TicketStatus.overdue
                             ? UColors.indigo400
                             : UColors.gray500,
                 borderRadius: BorderRadius.circular(16),

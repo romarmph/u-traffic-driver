@@ -278,7 +278,7 @@ class _TicketViewState extends ConsumerState<TicketView>
             ),
             const SizedBox(height: 12),
             Visibility(
-              visible: TicketStatus.expired == widget.ticket.status,
+              visible: TicketStatus.overdue == widget.ticket.status,
               child: Container(
                 decoration: const BoxDecoration(
                   color: UColors.gray100,
@@ -292,7 +292,7 @@ class _TicketViewState extends ConsumerState<TicketView>
                   children: [
                     const SizedBox(height: 12),
                     const Text(
-                      'Expired',
+                      'overdue',
                       style: TextStyle(
                         color: UColors.gray600,
                         fontSize: 20,
