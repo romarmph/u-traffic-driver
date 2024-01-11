@@ -3,12 +3,10 @@ import 'package:u_traffic_driver/model/attachment_model.dart';
 import 'package:u_traffic_driver/model/complaint.dart';
 import 'package:u_traffic_driver/riverpod/admin.riverpod.dart';
 import 'package:u_traffic_driver/riverpod/complaints.riverpod.dart';
-import 'package:u_traffic_driver/riverpod/ticket.riverpod.dart';
 import 'package:u_traffic_driver/utils/exports/exports.dart';
 import 'package:u_traffic_driver/utils/exports/flutter_dart.dart';
 import 'package:u_traffic_driver/views/report/create_complaint_page.dart';
 import 'package:u_traffic_driver/views/report/widgets/attach_file_tile.dart';
-import 'package:u_traffic_driver/views/report/widgets/attach_ticket_card.dart';
 import 'package:path/path.dart' as path;
 
 class ComplainViewPage extends ConsumerWidget {
@@ -34,11 +32,7 @@ class ComplainViewPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PrimaryThreadTile(complaintId: complaintId),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Replies'),
-            ),
+            SenderTile(complaintId: complaintId),
             ..._buildReplies(ref),
           ],
         ),
@@ -72,11 +66,11 @@ class ComplainViewPage extends ConsumerWidget {
                 final currentUser = ref.watch(driverAccountProvider);
 
                 if (currentUser!.id != reply.sender) {
-                  return AdminReplyTile(complaint: reply);
+                  return ReplyTile(complaint: reply);
                 }
 
-                return DriverReplyTile(
-                  complaint: reply,
+                return SenderTile(
+                  complaintId: reply.id!,
                 );
               },
             ).toList();
@@ -87,8 +81,8 @@ class ComplainViewPage extends ConsumerWidget {
   }
 }
 
-class PrimaryThreadTile extends ConsumerWidget {
-  const PrimaryThreadTile({
+class SenderTile extends ConsumerWidget {
+  const SenderTile({
     super.key,
     required this.complaintId,
   });
@@ -100,125 +94,70 @@ class PrimaryThreadTile extends ConsumerWidget {
     final currentDriver = ref.watch(driverAccountProvider);
     return ref.watch(getComplaintByIdProvider(complaintId)).when(
         data: (complaint) {
-      return ExpansionTileCard(
-        baseColor: UColors.white,
-        expandedColor: UColors.white,
-        initiallyExpanded: true,
-        elevation: 0,
-        leading: ClipOval(
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: UColors.gray300,
-            child: CachedNetworkImage(
-              imageUrl: currentDriver!.photoUrl,
-            ),
-          ),
-        ),
-        title: Text(
-          complaint.title,
-          style: const UTextStyle().textlgfontbold,
-        ),
-        subtitle: Text(
-          complaint.createdAt.toDate().toAmericanDate,
-          style: const UTextStyle().textsmfontmedium,
-        ),
-        initialElevation: 0,
-        shadowColor: Colors.transparent,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              complaint.description,
-              style: const UTextStyle().textsmfontmedium,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(left: 16),
-            width: double.infinity,
-            child: const Text(
-              'Attached Ticket',
-              textAlign: TextAlign.left,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: complaint.attachedTicket.isEmpty
-                ? Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: UColors.gray100,
+                      color: UColors.gray50,
                       border: Border.all(
-                        color: UColors.gray300,
+                        color: UColors.gray200,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      'No ticket attached',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: UColors.gray400,
-                      ),
-                    ),
-                  )
-                : ref
-                    .watch(getTicketByIdProvider(complaint.attachedTicket))
-                    .when(
-                    data: (ticket) {
-                      return AttachTicketCard(
-                        ticket: ticket,
-                      );
-                    },
-                    error: (error, stackTrace) {
-                      return Center(
-                        child: Text(
-                          error.toString(),
-                          style: const UTextStyle().textlgfontbold,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          "dwa daw ad adw  lorem ipsum dolor sit amet.",
+                          style: const UTextStyle().textsmfontbold,
+                          textAlign: TextAlign.end,
                         ),
-                      );
-                    },
-                    loading: () {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    },
-                  ),
-          ),
-          complaint.attachments.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: Column(
-                    children: _buildAttachments(complaint.attachments),
-                  ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: UColors.gray100,
-                      border: Border.all(
-                        color: UColors.gray300,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      'No attachments',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: UColors.gray400,
-                      ),
+                        const SizedBox(height: 4),
+                        Text(
+                          complaint.description,
+                          style: const UTextStyle().textbasefontnormal,
+                          textAlign: TextAlign.end,
+                        ),
+                        const SizedBox(height: 4),
+                        ..._buildAttachments(complaint.attachments),
+                      ],
                     ),
                   ),
-                ),
-        ],
+                  const SizedBox(height: 4),
+                  Text(
+                    complaint.createdAt.toDate().toAmericanDateWithTime,
+                    style: const UTextStyle().textxsfontmedium.copyWith(
+                          color: UColors.gray400,
+                        ),
+                    textAlign: TextAlign.end,
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 40,
+              height: 40,
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              decoration: BoxDecoration(
+                color: UColors.gray300,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: CachedNetworkImage(
+                imageUrl: currentDriver!.photoUrl,
+              ),
+            ),
+          ],
+        ),
       );
     }, error: (error, stackTrace) {
       return Center(
@@ -303,8 +242,8 @@ class PrimaryThreadTile extends ConsumerWidget {
   }
 }
 
-class DriverReplyTile extends ConsumerWidget {
-  const DriverReplyTile({
+class ReplyTile extends ConsumerWidget {
+  const ReplyTile({
     super.key,
     required this.complaint,
   });
@@ -313,326 +252,84 @@ class DriverReplyTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var currentDriver = ref.watch(driverAccountProvider);
-
-    return ExpansionTileCard(
-      elevation: 0,
-      leading: ClipOval(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: CircleAvatar(
-          radius: 18,
-          backgroundColor: UColors.gray300,
-          child: CachedNetworkImage(
-            imageUrl: currentDriver!.photoUrl,
-          ),
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 12,
+        right: 12,
+        bottom: 8,
       ),
-      title: Text(
-        complaint.title,
-        style: const UTextStyle().textlgfontbold,
-      ),
-      subtitle: Text(
-        complaint.createdAt.toDate().toAmericanDate,
-        style: const UTextStyle().textsmfontmedium,
-      ),
-      initialElevation: 0,
-      shadowColor: Colors.transparent,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            complaint.description,
-            style: const UTextStyle().textsmfontmedium,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            decoration: BoxDecoration(
+              color: UColors.gray300,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: ref.watch(adminProvider(complaint.sender)).when(
+              data: (admin) {
+                return CachedNetworkImage(
+                  imageUrl: admin.photoUrl,
+                );
+              },
+              error: (error, stackTrace) {
+                return const Icon(Icons.person);
+              },
+              loading: () {
+                return const Icon(Icons.person);
+              },
+            ),
           ),
-        ),
-        Container(
-          padding: const EdgeInsets.only(left: 16),
-          width: double.infinity,
-          child: const Text(
-            'Attached Ticket',
-            textAlign: TextAlign.left,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: complaint.attachedTicket.isEmpty
-              ? Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: UColors.gray100,
+                    color: UColors.gray50,
                     border: Border.all(
-                      color: UColors.gray300,
+                      color: UColors.gray200,
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'No ticket attached',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: UColors.gray400,
-                    ),
-                  ),
-                )
-              : ref.watch(getTicketByIdProvider(complaint.attachedTicket)).when(
-                  data: (ticket) {
-                    return AttachTicketCard(
-                      ticket: ticket,
-                    );
-                  },
-                  error: (error, stackTrace) {
-                    return Center(
-                      child: Text(
-                        error.toString(),
-                        style: const UTextStyle().textlgfontbold,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        complaint.title,
+                        style: const UTextStyle().textsmfontbold,
+                        textAlign: TextAlign.start,
                       ),
-                    );
-                  },
-                  loading: () {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-        ),
-        complaint.attachments.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
-                child: Column(
-                  children: _buildAttachments(complaint.attachments),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: UColors.gray100,
-                    border: Border.all(
-                      color: UColors.gray300,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'No attachments',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: UColors.gray400,
-                    ),
-                  ),
-                ),
-              ),
-      ],
-    );
-  }
-
-  List<Widget> _buildAttachments(List<Attachment> attachments) {
-    var widgets = <Widget>[];
-
-    for (var attachment in attachments) {
-      widgets.add(
-        AttachFileTile(
-          attachment: attachment,
-          onTiletap: () {
-            _downloadFile(
-              attachment.url,
-              attachment.name,
-            );
-          },
-        ),
-      );
-      widgets.add(const SizedBox(height: 8));
-    }
-
-    return widgets;
-  }
-
-  void _downloadFile(String url, String fileName) async {
-    final result = await QuickAlert.show(
-      context: navigatorKey.currentContext!,
-      type: QuickAlertType.confirm,
-      title: 'Download File',
-      text: 'Are you sure to download this file?',
-      onConfirmBtnTap: () {
-        Navigator.of(navigatorKey.currentContext!).pop(true);
-      },
-    );
-
-    if (result != true) {
-      return;
-    }
-
-    QuickAlert.show(
-      context: navigatorKey.currentContext!,
-      type: QuickAlertType.loading,
-      title: 'Downloading',
-      text: 'Please wait...',
-    );
-
-    try {
-      const directory = '/storage/emulated/0/Download';
-      final time = DateTime.now().millisecondsSinceEpoch;
-      final fullPath = path.join(directory,
-          '${fileName.split('.').first}-$time.${fileName.split('.').last}');
-      await Directory(directory).create(recursive: true);
-
-      final res = await get(Uri.parse(url));
-      File(fullPath).writeAsBytes(res.bodyBytes);
-      Navigator.of(navigatorKey.currentContext!).pop();
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-        const SnackBar(
-          content: Text('File downloaded successfully'),
-        ),
-      );
-    } catch (e) {
-      QuickAlert.show(
-        context: navigatorKey.currentContext!,
-        type: QuickAlertType.error,
-        title: 'Error',
-        text: 'Something went wrong. Please try again later.',
-      );
-    }
-  }
-}
-
-class AdminReplyTile extends ConsumerWidget {
-  const AdminReplyTile({
-    super.key,
-    required this.complaint,
-  });
-
-  final Complaint complaint;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ExpansionTileCard(
-      elevation: 0,
-      leading: ClipOval(
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        child: CircleAvatar(
-          radius: 18,
-          backgroundColor: UColors.gray300,
-          child: ref.watch(adminProvider(complaint.sender)).when(
-            data: (admin) {
-              return CachedNetworkImage(
-                imageUrl: admin.photoUrl,
-              );
-            },
-            error: (error, stackTrace) {
-              return const Icon(Icons.person);
-            },
-            loading: () {
-              return const Icon(Icons.person);
-            },
-          ),
-        ),
-      ),
-      title: Text(
-        complaint.title,
-        style: const UTextStyle().textlgfontbold,
-      ),
-      subtitle: Text(
-        complaint.createdAt.toDate().toAmericanDate,
-        style: const UTextStyle().textsmfontmedium,
-      ),
-      initialElevation: 0,
-      shadowColor: Colors.transparent,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            complaint.description,
-            style: const UTextStyle().textsmfontmedium,
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.only(left: 16),
-          width: double.infinity,
-          child: const Text(
-            'Attached Ticket',
-            textAlign: TextAlign.left,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: complaint.attachedTicket.isEmpty
-              ? Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: UColors.gray100,
-                    border: Border.all(
-                      color: UColors.gray300,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'No ticket attached',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: UColors.gray400,
-                    ),
-                  ),
-                )
-              : ref.watch(getTicketByIdProvider(complaint.attachedTicket)).when(
-                  data: (ticket) {
-                    return AttachTicketCard(
-                      ticket: ticket,
-                    );
-                  },
-                  error: (error, stackTrace) {
-                    return Center(
-                      child: Text(
-                        error.toString(),
-                        style: const UTextStyle().textlgfontbold,
+                      const SizedBox(height: 4),
+                      Text(
+                        complaint.description,
+                        style: const UTextStyle().textbasefontnormal,
+                        textAlign: TextAlign.start,
                       ),
-                    );
-                  },
-                  loading: () {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-        ),
-        complaint.attachments.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
-                child: Column(
-                  children: _buildAttachments(complaint.attachments),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: UColors.gray100,
-                    border: Border.all(
-                      color: UColors.gray300,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'No attachments',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: UColors.gray400,
-                    ),
+                      const SizedBox(height: 4),
+                      ..._buildAttachments(complaint.attachments),
+                    ],
                   ),
                 ),
-              ),
-      ],
+                const SizedBox(height: 4),
+                Text(
+                  complaint.createdAt.toDate().toAmericanDateWithTime,
+                  style: const UTextStyle().textxsfontmedium.copyWith(
+                        color: UColors.gray400,
+                      ),
+                  textAlign: TextAlign.start,
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
